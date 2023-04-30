@@ -1,7 +1,6 @@
 package com.example.boardapp
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.boardapp.databinding.ActivityLoginBinding
 
@@ -15,15 +14,24 @@ class LoginActivity : AppCompatActivity() {
 
         mBinding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+//
+//            val id = intent.getStringExtra("id")
+//            val pw = intent.getStringExtra("pw")
+//
+//            val idView = binding.idTextView
+//            val pwView = binding.pwTextView
+//
+//            idView.text = id
+//            pwView.text = pw
 
-            val id = intent.getStringExtra("id")
-            val pw = intent.getStringExtra("pw")
+        val shared = getSharedPreferences("login", MODE_PRIVATE)
 
-            val idView = binding.idTextView
-            val pwView = binding.pwTextView
 
-            idView.text = id
-            pwView.text = pw
+        with(binding){
+            idTextView.text =  shared.getString("id", "")
+            pwTextView.text=   shared.getString("pw", "")
+        }
+
     }
 
 }
