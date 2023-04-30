@@ -1,16 +1,34 @@
 package com.example.boardapp
 
+import android.content.ContentValues.TAG
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import com.example.boardapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    private var mBinding:ActivityMainBinding? = null
+    private val binding get() = mBinding!!
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        mBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.loginButton.setOnClickListener{
+            val id = binding.idEditTextText.text.toString()
+            val pw = binding.pwEditTextTextPassword.text.toString()
+
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.putExtra("id", id)
+            intent.putExtra("pw", pw)
+            startActivity(intent)
 
 
-
-
+        }
 
     }
 }
