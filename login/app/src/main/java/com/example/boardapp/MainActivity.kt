@@ -7,12 +7,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import com.example.boardapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private var mBinding:ActivityMainBinding? = null
     private val binding get() = mBinding!!
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +49,9 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
 
+
         }
     }
+
+
 }

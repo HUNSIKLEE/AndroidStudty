@@ -7,21 +7,48 @@
 
     <TextView
         android:id="@+id/id_textView"
-        android:layout_width="186dp"
-        android:layout_height="83dp"
+        android:layout_width="122dp"
+        android:layout_height="30dp"
         android:layout_marginTop="-200dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.002"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.994" />
+
+    <TextView
+        android:id="@+id/pw_textView"
+        android:layout_width="157dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="-200dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/id_textView"
+        app:layout_constraintVertical_bias="0.971" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/test_recyclerView"
+        android:layout_width="409dp"
+        android:layout_height="684dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/pw_textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/pw_textView"
-        android:layout_width="186dp"
-        android:layout_height="83dp"
-        android:layout_marginTop="-200dp"
+    <Button
+        android:id="@+id/add_button"
+        android:layout_width="109dp"
+        android:layout_height="38dp"
+        android:text="추가"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/id_textView" />
+        app:layout_constraintHorizontal_bias="0.435"
+        app:layout_constraintStart_toEndOf="@+id/pw_textView"
+        app:layout_constraintTop_toBottomOf="@+id/test_recyclerView"
+        app:layout_constraintVertical_bias="0.583" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
