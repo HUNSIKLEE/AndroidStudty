@@ -12,7 +12,7 @@ class ProfileAdapter(private val context: Context) : RecyclerView.Adapter<Profil
     var datas = mutableListOf<ProfileData>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.activity_login, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.activity_item, parent, false)
         return ViewHolder(view)
     }
 
