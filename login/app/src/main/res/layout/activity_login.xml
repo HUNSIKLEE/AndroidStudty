@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/id_textView"
+        android:id="@+id/name_textView"
         android:layout_width="109dp"
         android:layout_height="77dp"
         android:textSize="34sp"
@@ -20,7 +20,7 @@
         android:layout_marginStart="20dp"
         android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/id_textView" />
+        app:layout_constraintStart_toEndOf="@+id/name_textView" />
 
     <Button
         android:id="@+id/add_button"

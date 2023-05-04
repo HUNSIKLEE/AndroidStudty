@@ -39,7 +39,8 @@ class LoginActivity : AppCompatActivity() {
 
 
         with(binding) {
-            idTextView.text = shared.getString("id", "")
+
+            nameTextView.text = shared.getString("id", "")
             pwTextView.text = shared.getString("pw", "")
 
             addButton.setOnClickListener {
