@@ -25,6 +25,10 @@ class ProfileAdapter(private val profileList: LoginActivity) : RecyclerView.Adap
         holder.bind(datas[position])
     }
 
+    fun notifyItemRangeInserted(i: Int) {
+
+    }
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val nameTextView: TextView = itemView.findViewById(R.id.name_textView)
         private val ageTextView: TextView = itemView.findViewById(R.id.age_textView)

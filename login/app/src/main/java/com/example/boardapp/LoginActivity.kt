@@ -25,15 +25,7 @@ class LoginActivity : AppCompatActivity() {
 
         mBinding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-//             인텐트로 데이터 넘기기
-//            val id = intent.getStringExtra("id")
-//            val pw = intent.getStringExtra("pw")
-//
-//            val idView = binding.idTextView
-//            val pwView = binding.pwTextView
-//
-//            idView.text = id
-//            pwView.text = pw
+
 
         val shared = getSharedPreferences("login", MODE_PRIVATE)
 
@@ -58,54 +50,61 @@ class LoginActivity : AppCompatActivity() {
         binding.recyclerView.adapter = profileAdapter
 
 
+//
+//        datas.apply {
+//
+//            add(
+//                ProfileData(
+//                    name = "charlse",
+//                    email = "test@test.com",
+//                    age = 4,
+//                    img = R.drawable.charles
+//                )
+//            )
+//            add(
+//                ProfileData(
+//                    name = "sik",
+//                    email = "test@test.com",
+//                    age = 34,
+//                    img = R.drawable.ic_launcher_background
+//                )
+//            )
+//            add(
+//                ProfileData(
+//                    name = "sung",
+//                    email = "test@test.com",
+//                    age = 35,
+//                    img = R.drawable.ic_launcher_foreground
+//                )
+//            )
+//            add(
+//                ProfileData(
+//                    name = "segi",
+//                    email = "test@test.com",
+//                    age = 34,
+//                    img = R.drawable.charles
+//                )
+//            )
+//            add(
+//                ProfileData(
+//                    name = "young",
+//                    email = "test@test.com",
+//                    age = 31,
+//                    img = R.drawable.charles
+//                )
+//            )
+        val newData = ProfileData(
+            name = "New Name",
+            email = "new@test.com",
+            age = 25,
+            img = R.drawable.charles
+        )
 
-        datas.apply {
-
-            add(
-                ProfileData(
-                    name = "charlse",
-                    email = "test@test.com",
-                    age = 4,
-                    img = R.drawable.charles
-                )
-            )
-            add(
-                ProfileData(
-                    name = "sik",
-                    email = "test@test.com",
-                    age = 34,
-                    img = R.drawable.ic_launcher_background
-                )
-            )
-            add(
-                ProfileData(
-                    name = "sung",
-                    email = "test@test.com",
-                    age = 35,
-                    img = R.drawable.ic_launcher_foreground
-                )
-            )
-            add(
-                ProfileData(
-                    name = "segi",
-                    email = "test@test.com",
-                    age = 34,
-                    img = R.drawable.charles
-                )
-            )
-            add(
-                ProfileData(
-                    name = "young",
-                    email = "test@test.com",
-                    age = 31,
-                    img = R.drawable.charles
-                )
-            )
-
-            profileAdapter.datas = datas
-            profileAdapter.notifyDataSetChanged()
+        datas.add(newData)
+        profileAdapter.datas = datas
+        profileAdapter.notifyItemInserted(datas.size - 1)
+//            profileAdapter.datas = datas
+//            profileAdapter.notifyItemRangeInserted(datas.size - 1)
         }
     }
 
-
-}
