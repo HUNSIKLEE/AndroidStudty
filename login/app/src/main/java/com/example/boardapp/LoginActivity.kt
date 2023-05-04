@@ -1,6 +1,5 @@
 package com.example.boardapp
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -39,34 +38,68 @@ class LoginActivity : AppCompatActivity() {
         val shared = getSharedPreferences("login", MODE_PRIVATE)
 
 
-        with(binding){
-            idTextView.text =  shared.getString("id", "")
-            pwTextView.text=   shared.getString("pw", "")
+        with(binding) {
+            idTextView.text = shared.getString("id", "")
+            pwTextView.text = shared.getString("pw", "")
 
-            addButton.setOnClickListener{
+            addButton.setOnClickListener {
 
-                testRecyclerView.adapter.toString()
+
+                initRecycler()
 
             }
         }
 
-
-
-    initRecycler()
     }
+
     private fun initRecycler() {
         profileAdapter = ProfileAdapter(this)
-        binding.testRecyclerView.adapter = profileAdapter
+        binding.recyclerView.adapter = profileAdapter
 
 
 
         datas.apply {
 
-            add(ProfileData(name = "mary", email = "test@test.com", age = 24, img = R.drawable.charles))
-            add(ProfileData(name = "jenny",email = "test@test.com", age = 26, img = R.drawable.charles))
-            add(ProfileData(name = "jhon", email = "test@test.com",age = 27, img = R.drawable.charles))
-            add(ProfileData(name = "ruby", email = "test@test.com", age = 21, img = R.drawable.charles))
-            add(ProfileData(name = "yuna", email = "test@test.com",age = 23, img = R.drawable.charles))
+            add(
+                ProfileData(
+                    name = "charlse",
+                    email = "test@test.com",
+                    age = 4,
+                    img = R.drawable.charles
+                )
+            )
+            add(
+                ProfileData(
+                    name = "sik",
+                    email = "test@test.com",
+                    age = 34,
+                    img = R.drawable.ic_launcher_background
+                )
+            )
+            add(
+                ProfileData(
+                    name = "sung",
+                    email = "test@test.com",
+                    age = 35,
+                    img = R.drawable.ic_launcher_foreground
+                )
+            )
+            add(
+                ProfileData(
+                    name = "segi",
+                    email = "test@test.com",
+                    age = 34,
+                    img = R.drawable.charles
+                )
+            )
+            add(
+                ProfileData(
+                    name = "young",
+                    email = "test@test.com",
+                    age = 31,
+                    img = R.drawable.charles
+                )
+            )
 
             profileAdapter.datas = datas
             profileAdapter.notifyDataSetChanged()
