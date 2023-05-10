@@ -6,9 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ProfileAdapter(datas: MutableList<ProfileData>) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
 
-    var datas = mutableListOf<ProfileData>()
+class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
+
+    private val datas = mutableListOf<ProfileData>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.activity_item, parent, false)
@@ -17,14 +18,16 @@ class ProfileAdapter(datas: MutableList<ProfileData>) : RecyclerView.Adapter<Pro
         }
     }
 
+
     override fun getItemCount(): Int = datas.size
 
     override fun onBindViewHolder(holder: ProfileAdapter.ViewHolder, position: Int) {
         holder.bind(datas[position])
     }
 
-    fun notifyItemRangeInserted(i: Int) {
-
+    fun addItem(profileData: ProfileData){
+        datas.add(profileData)
+        notifyItemInserted(itemCount-1)
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

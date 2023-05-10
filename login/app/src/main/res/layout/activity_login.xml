@@ -10,17 +10,19 @@
         android:layout_width="232dp"
         android:layout_height="69dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="620dp"
+        android:layout_marginBottom="8dp"
         android:ems="10"
         android:hint="E-Mail"
-        android:inputType="text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/recyclerView" />
+        android:inputType="textEmailAddress"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/add_button"
         android:layout_width="136dp"
         android:layout_height="79dp"
+        android:layout_margin="14dp"
+        android:padding="14dp"
         android:text="ADD"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -42,26 +44,25 @@
         android:layout_width="118dp"
         android:layout_height="63dp"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="8dp"
         android:ems="10"
         android:hint="Name"
         android:inputType="text"
-        app:layout_constraintBottom_toTopOf="@+id/email_editTextText"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/recyclerView"
-        app:layout_constraintVertical_bias="0.936" />
+        app:layout_constraintVertical_bias="0.827" />
 
     <EditText
         android:id="@+id/age_editTextText"
         android:layout_width="130dp"
-        android:layout_height="58dp"
-        android:layout_marginStart="152dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="144dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
         android:hint="나이"
-        android:inputType="text"
-        app:layout_constraintBottom_toTopOf="@+id/email_editTextText"
+        android:inputType="number"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.926" />
+        app:layout_constraintVertical_bias="0.837" />
 </androidx.constraintlayout.widget.ConstraintLayout>

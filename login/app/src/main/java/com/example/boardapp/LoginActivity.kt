@@ -6,37 +6,34 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.boardapp.databinding.ActivityLoginBinding
 
+
 class LoginActivity : AppCompatActivity() {
 
-
-    private var mBinding: ActivityLoginBinding? = null
-    private val binding get() = mBinding!!
-    lateinit var profileAdapter: ProfileAdapter
-    val datas = mutableListOf<ProfileData>()
+    private lateinit var binding : ActivityLoginBinding
+    private val profileAdapter = ProfileAdapter()
 
     @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding = ActivityLoginBinding.inflate(layoutInflater)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        setUpAdapter()
+        setUpListener()
+    }
 
-        val shared = getSharedPreferences("login", MODE_PRIVATE)
+    private fun setUpAdapter() = with(binding.recyclerView){
+        layoutManager = LinearLayoutManager(this@LoginActivity)
+        adapter = profileAdapter
+    }
 
-        profileAdapter = ProfileAdapter(datas)
-
-        with(binding) {
-
-            recyclerView.adapter = profileAdapter
-
-            addButton.setOnClickListener {
-                initRecycler()
-            }
+    private fun setUpListener() = with(binding){
+        addButton.setOnClickListener {
+            addItem()
         }
     }
 
-    private fun initRecycler() {
+    private fun addItem() {
         val shared = getSharedPreferences("login", MODE_PRIVATE)
 
         val name = binding.nameEditTextText.text.toString()
@@ -49,10 +46,7 @@ class LoginActivity : AppCompatActivity() {
         editor.putString("email", email)
         editor.apply()
 
-
-            val newData = ProfileData(name = name, age = age, email = email)
-            datas.add(newData)
-            profileAdapter.notifyItemInserted(datas.size - 1)
-            profileAdapter.notifyDataSetChanged() // add this line to update the adapter
-        }
+        profileAdapter.addItem(
+            ProfileData(name = name, age = age, email = email))
     }
+}
