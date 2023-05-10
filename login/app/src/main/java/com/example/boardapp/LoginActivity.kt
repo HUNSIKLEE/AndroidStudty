@@ -1,100 +1,58 @@
 package com.example.boardapp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.boardapp.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
 
+
     private var mBinding: ActivityLoginBinding? = null
     private val binding get() = mBinding!!
-
-
     lateinit var profileAdapter: ProfileAdapter
     val datas = mutableListOf<ProfileData>()
 
+    @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         mBinding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        profileAdapter = ProfileAdapter(this)
-        binding.recyclerView.adapter = profileAdapter
-
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
         val shared = getSharedPreferences("login", MODE_PRIVATE)
 
+        profileAdapter = ProfileAdapter(datas)
 
         with(binding) {
 
-            nameTextView.text = shared.getString("id", "")
-            pwTextView.text = shared.getString("pw", "")
+            recyclerView.adapter = profileAdapter
 
             addButton.setOnClickListener {
-
-
                 initRecycler()
-
             }
         }
-
     }
 
     private fun initRecycler() {
+        val shared = getSharedPreferences("login", MODE_PRIVATE)
 
-        datas.apply {
+        val name = binding.nameEditTextText.text.toString()
+        val age = binding.ageEditTextText.text.toString()
+        val email = binding.emailEditTextText.text.toString()
 
-            add(
-                ProfileData(
-                    name = "charlse",
-                    email = "test@test.com",
-                    age = 4,
-                    img = R.drawable.charles
-                )
-            )
-            add(
-                ProfileData(
-                    name = "sik",
-                    email = "test@test.com",
-                    age = 34,
-                    img = R.drawable.ic_launcher_background
-                )
-            )
-            add(
-                ProfileData(
-                    name = "sung",
-                    email = "test@test.com",
-                    age = 35,
-                    img = R.drawable.ic_launcher_foreground
-                )
-            )
-            add(
-                ProfileData(
-                    name = "segi",
-                    email = "test@test.com",
-                    age = 34,
-                    img = R.drawable.charles
-                )
-            )
-            add(
-                ProfileData(
-                    name = "young",
-                    email = "test@test.com",
-                    age = 31,
-                    img = R.drawable.charles
-                )
-            )
+        val editor = shared.edit()
+        editor.putString("name", name)
+        editor.putString("age", age)
+        editor.putString("email", email)
+        editor.apply()
 
 
-            profileAdapter.datas = datas
+            val newData = ProfileData(name = name, age = age, email = email)
+            datas.add(newData)
             profileAdapter.notifyItemInserted(datas.size - 1)
-//            profileAdapter.datas = datas
-//            profileAdapter.notifyItemRangeInserted(datas.size - 1)
+            profileAdapter.notifyDataSetChanged() // add this line to update the adapter
         }
     }
-}
-
