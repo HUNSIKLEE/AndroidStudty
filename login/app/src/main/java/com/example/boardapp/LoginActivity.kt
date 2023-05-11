@@ -9,7 +9,7 @@ import com.example.boardapp.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var binding : ActivityLoginBinding
+    private lateinit var binding: ActivityLoginBinding
     private val profileAdapter = ProfileAdapter()
 
     @SuppressLint("SuspiciousIndentation")
@@ -22,13 +22,13 @@ class LoginActivity : AppCompatActivity() {
         setUpListener()
     }
 
-    private fun setUpAdapter() = with(binding.recyclerView){
+    private fun setUpAdapter() = with(binding.rvProfile) {
         layoutManager = LinearLayoutManager(this@LoginActivity)
         adapter = profileAdapter
     }
 
-    private fun setUpListener() = with(binding){
-        addButton.setOnClickListener {
+    private fun setUpListener() = with(binding) {
+        btnAdd.setOnClickListener {
             addItem()
         }
     }
@@ -36,9 +36,9 @@ class LoginActivity : AppCompatActivity() {
     private fun addItem() {
         val shared = getSharedPreferences("login", MODE_PRIVATE)
 
-        val name = binding.nameEditTextText.text.toString()
-        val age = binding.ageEditTextText.text.toString()
-        val email = binding.emailEditTextText.text.toString()
+        val name = binding.editName.text.toString()
+        val age = binding.editAge.text.toString()
+        val email = binding.editEmail.text.toString()
 
         val editor = shared.edit()
         editor.putString("name", name)
@@ -47,6 +47,7 @@ class LoginActivity : AppCompatActivity() {
         editor.apply()
 
         profileAdapter.addItem(
-            ProfileData(name = name, age = age, email = email))
+            ProfileData(name = name, age = age, email = email)
+        )
     }
 }
