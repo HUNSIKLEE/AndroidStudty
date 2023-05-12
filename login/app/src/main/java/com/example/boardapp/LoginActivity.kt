@@ -2,6 +2,7 @@ package com.example.boardapp
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.boardapp.databinding.ActivityLoginBinding
@@ -31,6 +32,7 @@ class LoginActivity : AppCompatActivity() {
         btnAdd.setOnClickListener {
             addItem()
         }
+
     }
 
     private fun addItem() {
@@ -39,6 +41,12 @@ class LoginActivity : AppCompatActivity() {
         val name = binding.editName.text.toString()
         val age = binding.editAge.text.toString()
         val email = binding.editEmail.text.toString()
+
+
+        if (name.isBlank() || age.isBlank() || email.isBlank()) {
+            Toast.makeText(this, "빈칸을 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         val editor = shared.edit()
         editor.putString("name", name)
@@ -49,5 +57,7 @@ class LoginActivity : AppCompatActivity() {
         profileAdapter.addItem(
             ProfileData(name = name, age = age, email = email)
         )
+
+
     }
 }

@@ -5,11 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.boardapp.databinding.ActivityItemBinding
+import com.example.boardapp.databinding.ActivityLoginBinding
 
 
 class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
 
     private val datas = mutableListOf<ProfileData>()
+    private lateinit var binding: ActivityItemBinding
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.activity_item, parent, false)
@@ -30,6 +33,13 @@ class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
         notifyItemInserted(itemCount-1)
     }
 
+    fun removeItem(profileData: ProfileData) {
+        datas.remove(profileData)
+       notifyDataSetChanged()
+    }
+
+
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val nameTextView: TextView = itemView.findViewById(R.id.name_textView)
         private val ageTextView: TextView = itemView.findViewById(R.id.age_textView)
@@ -39,6 +49,8 @@ class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
             nameTextView.text = data.name
             emailTextView.text = data.email
             ageTextView.text = data.age.toString()
+
+
 
         }
     }
