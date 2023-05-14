@@ -14,13 +14,31 @@ class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
     private val datas = mutableListOf<ProfileData>()
     private lateinit var binding: ActivityItemBinding
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.activity_item, parent, false)
-        return ViewHolder(view).apply {
+//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+//        val view = LayoutInflater.from(parent.context).inflate(R.layout.activity_item, parent, false)
+//        return ViewHolder(view).apply {
+//            binding.btnRemove.setOnClickListener {
+//                val position = bindingAdapterPosition // get the position of the item
+//                if (position != RecyclerView.NO_POSITION) { // check if item is still present
+//                    val profileData = datas[position] // get the ProfileData object
+//                    removeItem(profileData) // remove the item from the list
+//                }
+//            }
+//        }
+//    }
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding = ActivityItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding.root).apply {
+            binding.btnRemove.setOnClickListener {
+                val position = bindingAdapterPosition // 뭔지 모르겠다. 일단 검색해서 했음
+                if (position != RecyclerView.NO_POSITION) {
+                    val profileData = datas[position]
+                    removeItem(profileData)
+                }
+            }
         }
     }
-
 
     override fun getItemCount(): Int = datas.size
 
@@ -28,16 +46,15 @@ class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
         holder.bind(datas[position])
     }
 
-    fun addItem(profileData: ProfileData){
+    fun addItem(profileData: ProfileData) {
         datas.add(profileData)
-        notifyItemInserted(itemCount-1)
+        notifyItemInserted(itemCount - 1)
     }
 
     fun removeItem(profileData: ProfileData) {
         datas.remove(profileData)
-       notifyDataSetChanged()
+        notifyDataSetChanged()
     }
-
 
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -49,7 +66,6 @@ class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
             nameTextView.text = data.name
             emailTextView.text = data.email
             ageTextView.text = data.age.toString()
-
 
 
         }
