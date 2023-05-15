@@ -1,22 +1,26 @@
-package com.example.boardapp
+package com.example.boardapp.ui.main
 
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.boardapp.data.ProfileData
 import com.example.boardapp.databinding.ActivityLoginBinding
+import com.example.boardapp.databinding.ActivityMainBinding
+import com.example.boardapp.ui.login.ProfileAdapter
 
 
-class LoginActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityLoginBinding
+    private lateinit var binding: ActivityMainBinding
     private val profileAdapter = ProfileAdapter()
 
     @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLoginBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setUpAdapter()
@@ -24,7 +28,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setUpAdapter() = with(binding.rvProfile) {
-        layoutManager = LinearLayoutManager(this@LoginActivity)
+        layoutManager = LinearLayoutManager(this@MainActivity)
         adapter = profileAdapter
     }
 
@@ -33,7 +37,25 @@ class LoginActivity : AppCompatActivity() {
             addItem()
         }
 
+        editName.addTextChangedListener {
+            checkEnableBtn()
+        }
+
+        editAge.addTextChangedListener {
+            checkEnableBtn()
+        }
+        editEmail.addTextChangedListener {
+            checkEnableBtn()
+        }
+
     }
+
+
+    private fun checkEnableBtn() = with(binding) {
+        btnAdd.isEnabled =
+            editName.text.isNotEmpty() && editAge.text.isNotEmpty() && editEmail.text.isNotEmpty()
+    }
+
 
     private fun addItem() {
         val shared = getSharedPreferences("login", MODE_PRIVATE)
@@ -41,12 +63,6 @@ class LoginActivity : AppCompatActivity() {
         val name = binding.editName.text.toString()
         val age = binding.editAge.text.toString()
         val email = binding.editEmail.text.toString()
-
-
-        if (name.isBlank() || age.isBlank() || email.isBlank()) {
-            Toast.makeText(this, "빈칸을 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
-            return
-        }
 
         val editor = shared.edit()
         editor.putString("name", name)
