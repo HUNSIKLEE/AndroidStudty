@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation = "horizontal"
     android:layout_marginBottom="10dp">
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="46dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:src="@drawable/baseline_account_circle_24" />
+
     <LinearLayout
-        android:layout_width="286dp"
+        android:layout_width="256dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
@@ -34,11 +43,11 @@
 
     </LinearLayout>
 
-    <Button
+    <ImageView
         android:id="@+id/btn_remove"
-        android:layout_width="127dp"
+        android:layout_width="10dp"
         android:layout_height="61dp"
         android:layout_weight="1"
-        android:text="삭제" />
+        app:srcCompat="@android:drawable/ic_delete" />
 
 </LinearLayout>
