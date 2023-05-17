@@ -15,8 +15,8 @@
         android:src="@drawable/baseline_account_circle_24" />
 
     <LinearLayout
-        android:layout_width="256dp"
-        android:layout_height="wrap_content"
+        android:layout_width="164dp"
+        android:layout_height="113dp"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
         android:orientation="vertical">
@@ -40,6 +40,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="email" />
+
+        <ImageButton
+            android:id="@+id/btn_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/baseline_image_24" />
 
     </LinearLayout>
 

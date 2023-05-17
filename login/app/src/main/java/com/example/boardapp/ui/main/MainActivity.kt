@@ -12,11 +12,10 @@ import com.example.boardapp.databinding.ActivityMainBinding
 import com.example.boardapp.ui.login.LoginActivity
 import com.example.boardapp.ui.login.ProfileAdapter
 
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val profileAdapter = ProfileAdapter()
+    private val profileAdapter = ProfileAdapter(this)
 
 
     @SuppressLint("SuspiciousIndentation")
@@ -28,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         setUpAdapter()
         setUpListener()
         back()
+
     }
 
     private fun setUpAdapter() = with(binding.rvProfile) {
@@ -93,8 +93,5 @@ class MainActivity : AppCompatActivity() {
         profileAdapter.addItem(
             ProfileData(name = name, age = age, email = email, img = R.drawable.charles)
         )
-
-
     }
 }
-

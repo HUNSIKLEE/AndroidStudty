@@ -1,40 +1,20 @@
 package com.example.boardapp.ui.login
 
-import android.app.Activity.RESULT_OK
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.boardapp.R
 import com.example.boardapp.data.ProfileData
 import com.example.boardapp.databinding.ActivityMainBinding
 import com.example.boardapp.databinding.ItemProfileBinding
+import com.example.boardapp.ui.main.MainActivity
 
-
-class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
+class ProfileAdapter(mainActivity: MainActivity) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
 
     private val datas = mutableListOf<ProfileData>()
     private lateinit var binding: ActivityMainBinding
-
-
-    private val activityResult: ActivityResultLauncher<Intent> = registerForActivityResult(
-        ActivityResultContract.SynchronousResult()) {
-
-
-        if(it.resultCode == RESULT_OK && it.data != null){
-
-            val uri = it.data!!.data
-
-            Glide.with(this)
-                .load(uri)
-                .into(binding.imageView)
-        }
-    }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -44,15 +24,8 @@ class ProfileAdapter : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
                 btnRemove.setOnClickListener {
                     val position = bindingAdapterPosition
                     if (position != RecyclerView.NO_POSITION) {
-//                        val profileData = datas[position] // 객체를 만들어서 하는것보단 포지션 번호가 훨씬 효율적이다
                         removeItem(position)
                     }
-                }
-                imageView.setOnClickListener {
-                    val intent = Intent(Intent.ACTION_PICK)
-                    intent.type = "image/*"
-                    activityResult.launch(intent)
-
                 }
             }
         }
