@@ -1,6 +1,8 @@
 package com.example.boardapp.ui.login
 
 import ProfileData
+import android.app.Activity
+import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.boardapp.R
 import com.example.boardapp.databinding.ActivityMainBinding
 import com.example.boardapp.databinding.ItemProfileBinding
-import com.example.boardapp.ui.main.MainActivity
 import com.example.boardapp.ui.main.OnImageClickListener
 
-class ProfileAdapter(mainActivity: MainActivity) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
+class ProfileAdapter(private val activity: Activity) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
 
     private val datas = mutableListOf<ProfileData>()
     private lateinit var binding: ActivityMainBinding
@@ -35,12 +36,15 @@ class ProfileAdapter(mainActivity: MainActivity) : RecyclerView.Adapter<ProfileA
                     val position = bindingAdapterPosition
                     if(position != RecyclerView.NO_POSITION){
                         imageClickListener?.onImageClick(position)
+                        val intent = Intent(Intent.ACTION_GET_CONTENT)
+                        intent.type = "image/*"
+                        activity.startActivityForResult(intent, 2000)
                     }
                 }
             }
         }
     }
-
+    //                        context.startActivity(intent)
     override fun getItemCount(): Int = datas.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -80,4 +84,7 @@ class ProfileAdapter(mainActivity: MainActivity) : RecyclerView.Adapter<ProfileA
 
         }
     }
+
+
+
 }

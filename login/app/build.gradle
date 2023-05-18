@@ -3,11 +3,16 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+
 android {
     namespace 'com.example.boardapp'
     compileSdk 33
 
     viewBinding {
+        enabled = true
+    }
+
+    dataBinding {
         enabled = true
     }
 
@@ -34,6 +39,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
 }
 
 dependencies {
@@ -49,5 +55,8 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.14.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.1'
     implementation 'androidx.activity:activity-ktx:1.7.1'
+    implementation 'com.github.bumptech.glide:glide:4.14.1'
 
+    implementation 'gun0912.ted:tedbottompicker:1.0.4'
+    implementation 'com.github.ParkSangGwon:TedPicker:v1.0.10'
 }
