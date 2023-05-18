@@ -1,20 +1,24 @@
 package com.example.boardapp.ui.login
 
+import ProfileData
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.boardapp.R
-import com.example.boardapp.data.ProfileData
 import com.example.boardapp.databinding.ActivityMainBinding
 import com.example.boardapp.databinding.ItemProfileBinding
 import com.example.boardapp.ui.main.MainActivity
+import com.example.boardapp.ui.main.OnImageClickListener
 
 class ProfileAdapter(mainActivity: MainActivity) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
 
     private val datas = mutableListOf<ProfileData>()
     private lateinit var binding: ActivityMainBinding
+
+    private var imageClickListener: OnImageClickListener? = null
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -25,6 +29,12 @@ class ProfileAdapter(mainActivity: MainActivity) : RecyclerView.Adapter<ProfileA
                     val position = bindingAdapterPosition
                     if (position != RecyclerView.NO_POSITION) {
                         removeItem(position)
+                    }
+                }
+                btnImage.setOnClickListener {
+                    val position = bindingAdapterPosition
+                    if(position != RecyclerView.NO_POSITION){
+                        imageClickListener?.onImageClick(position)
                     }
                 }
             }
@@ -47,6 +57,14 @@ class ProfileAdapter(mainActivity: MainActivity) : RecyclerView.Adapter<ProfileA
         notifyItemRemoved(position)
     }
 
+    fun setOnImageClickListener(listener: OnImageClickListener) {
+        imageClickListener = listener
+    }
+
+    fun updateImage(position: Int, imageUri: Uri) {
+        datas[position].imageUri = imageUri
+        notifyItemChanged(position)
+    }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val nameTextView: TextView = itemView.findViewById(R.id.name_textView)

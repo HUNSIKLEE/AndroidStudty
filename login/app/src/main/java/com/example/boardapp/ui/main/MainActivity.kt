@@ -1,18 +1,19 @@
 package com.example.boardapp.ui.main
 
+import ProfileData
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.boardapp.R
-import com.example.boardapp.data.ProfileData
 import com.example.boardapp.databinding.ActivityMainBinding
 import com.example.boardapp.ui.login.LoginActivity
 import com.example.boardapp.ui.login.ProfileAdapter
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ProfileAdapter.OnImageClickListener {
 
     private lateinit var binding: ActivityMainBinding
     private val profileAdapter = ProfileAdapter(this)
@@ -70,11 +71,23 @@ class MainActivity : AppCompatActivity() {
 
     private fun back() = with(binding) {
         btnBack.setOnClickListener {
-            val intent =
-                Intent(this@MainActivity, LoginActivity::class.java) // @LoginActivity 써줘야 하는이유??
+            val intent = Intent(this@MainActivity, LoginActivity::class.java) // @LoginActivity 써줘야 하는이유??
             startActivity(intent)
         }
     }
+
+    fun onImageClick(position: Int) {
+        // Open the photo album and handle the selected image
+        val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            // Handle the result here
+            if (uri != null) {
+                // Update the image in the corresponding item of the adapter
+                profileAdapter.updateImage(position, uri)
+            }
+        }
+        galleryLauncher.launch("image/*")
+    }
+
 
 
     private fun addItem() = with(binding) {
@@ -83,11 +96,13 @@ class MainActivity : AppCompatActivity() {
         val name = editName.text.toString()
         val age = editAge.text.toString()
         val email = editEmail.text.toString()
+        val img = R.drawable.charles
 
         val editor = shared.edit()
         editor.putString("name", name)
         editor.putString("age", age)
         editor.putString("email", email)
+        editor.putInt("img", img)
         editor.apply()
 
         profileAdapter.addItem(
