@@ -30,7 +30,7 @@ class LoginActivity : AppCompatActivity() {
                 editor.putString("pw", pw)
                 editor.apply()
 
-                val intent = Intent(this@LoginActivity, MainActivity::class.java) // @LoginActivity 써줘야 하는이유??
+                val intent = Intent(this@LoginActivity, MainActivity::class.java)
                 startActivity(intent)
             }
         }

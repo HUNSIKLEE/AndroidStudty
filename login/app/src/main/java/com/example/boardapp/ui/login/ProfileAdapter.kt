@@ -4,23 +4,25 @@ import ProfileData
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.example.boardapp.R
 import com.example.boardapp.databinding.ActivityMainBinding
 import com.example.boardapp.databinding.ItemProfileBinding
 import com.example.boardapp.ui.main.OnImageClickListener
 
-class ProfileAdapter(private val activity: Activity) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
+class ProfileAdapter(private val listener: OnImageClickListener) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
 
     private val datas = mutableListOf<ProfileData>()
-    private lateinit var binding: ActivityMainBinding
-
-    private var imageClickListener: OnImageClickListener? = null
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemProfileBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -33,25 +35,12 @@ class ProfileAdapter(private val activity: Activity) : RecyclerView.Adapter<Prof
                     }
                 }
                 btnImage.setOnClickListener {
-
-                    val position = adapterPosition
-                    if (position != RecyclerView.NO_POSITION) {
-                        val intent = Intent(Intent.ACTION_GET_CONTENT)
-                        intent.putExtra("position", position)
-                        activity.startActivity(intent)
-
-//                        val position = bindingAdapterPosition
-//                    if(position != RecyclerView.NO_POSITION){
-//                        imageClickListener?.onImageClick(position)
-//                        val intent = Intent(Intent.ACTION_GET_CONTENT)
-//                        intent.type = "image/*"
-//                        activity.startActivityForResult(intent, 2000)
-                    }
+                    listener.onImageClick(bindingAdapterPosition)
                 }
             }
         }
     }
-    //                        context.startActivity(intent)
+
     override fun getItemCount(): Int = datas.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -67,11 +56,6 @@ class ProfileAdapter(private val activity: Activity) : RecyclerView.Adapter<Prof
         datas.removeAt(position)
         notifyItemRemoved(position)
     }
-
-    fun setOnImageClickListener(listener: OnImageClickListener) {
-        imageClickListener = listener
-    }
-
     fun updateImage(position: Int, imageUri: Uri) {
         datas[position].imageUri = imageUri
         notifyItemChanged(position)
@@ -81,14 +65,17 @@ class ProfileAdapter(private val activity: Activity) : RecyclerView.Adapter<Prof
         private val nameTextView: TextView = itemView.findViewById(R.id.name_textView)
         private val ageTextView: TextView = itemView.findViewById(R.id.age_textView)
         private val emailTextView: TextView = itemView.findViewById(R.id.email_textView)
+        private val imageView: ImageView = itemView.findViewById(R.id.imageView)
 
         fun bind(data: ProfileData) {
 
             nameTextView.text = data.name
             emailTextView.text = data.email
-            ageTextView.text = data.age.toString()
+            ageTextView.text = data.age
 
-
+            Glide.with(imageView.context)
+                .load(data.imageUri)
+                .into(imageView)
         }
     }
 
