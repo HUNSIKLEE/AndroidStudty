@@ -33,12 +33,19 @@ class ProfileAdapter(private val activity: Activity) : RecyclerView.Adapter<Prof
                     }
                 }
                 btnImage.setOnClickListener {
-                    val position = bindingAdapterPosition
-                    if(position != RecyclerView.NO_POSITION){
-                        imageClickListener?.onImageClick(position)
+
+                    val position = adapterPosition
+                    if (position != RecyclerView.NO_POSITION) {
                         val intent = Intent(Intent.ACTION_GET_CONTENT)
-                        intent.type = "image/*"
-                        activity.startActivityForResult(intent, 2000)
+                        intent.putExtra("position", position)
+                        activity.startActivity(intent)
+
+//                        val position = bindingAdapterPosition
+//                    if(position != RecyclerView.NO_POSITION){
+//                        imageClickListener?.onImageClick(position)
+//                        val intent = Intent(Intent.ACTION_GET_CONTENT)
+//                        intent.type = "image/*"
+//                        activity.startActivityForResult(intent, 2000)
                     }
                 }
             }

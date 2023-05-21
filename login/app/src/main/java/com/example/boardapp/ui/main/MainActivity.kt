@@ -1,12 +1,16 @@
 package com.example.boardapp.ui.main
 
 import ProfileData
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.boardapp.R
@@ -19,7 +23,12 @@ class MainActivity : AppCompatActivity(), OnImageClickListener {
 
     private lateinit var binding: ActivityMainBinding
     private val profileAdapter = ProfileAdapter(this)
-    private val INTENT_REQUEST_GET_IMAGES = 13
+
+    companion object {
+        private const val PERMISSION_REQUEST_CODE = 100
+        private const val PICK_IMAGE_REQUEST_CODE = 200
+    }
+    private var position: Int = -1
 
     @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +39,16 @@ class MainActivity : AppCompatActivity(), OnImageClickListener {
         setUpAdapter()
         setUpListener()
         back()
+
+        position = intent.getIntExtra("position", -1)
+
+        binding.btnimage.setOnClickListener {
+            if (checkPermission()) {
+                openPhotoAlbum()
+            } else {
+                requestPermission()
+            }
+        }
 
     }
 
@@ -93,6 +112,60 @@ class MainActivity : AppCompatActivity(), OnImageClickListener {
     }
 
 
+
+
+    private fun checkPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+            PERMISSION_REQUEST_CODE
+        )
+    }
+
+    private fun openPhotoAlbum() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, PICK_IMAGE_REQUEST_CODE)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openPhotoAlbum()
+            } else {
+                // Handle permission denied case
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_IMAGE_REQUEST_CODE && resultCode == RESULT_OK) {
+            val selectedImageUri = data?.data
+            // Update the photo for the item at the given position
+            updatePhoto(position, selectedImageUri)
+        }
+    }
+
+    private fun updatePhoto(position: Int, selectedImageUri: Uri?) {
+        // Update the data or notify the adapter about the photo change
+        // For example, if you have a list of data items, update the corresponding item:
+        data[position].photoUri = selectedImageUri.toString()
+        profileAdapter.notifyItemChanged(position)
+    }
+}
 
 
 //    private fun getImages() {
