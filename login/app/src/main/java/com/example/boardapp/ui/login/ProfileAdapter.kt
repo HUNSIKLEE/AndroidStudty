@@ -1,26 +1,24 @@
 package com.example.boardapp.ui.login
 
 import ProfileData
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 import com.example.boardapp.R
-import com.example.boardapp.databinding.ActivityMainBinding
 import com.example.boardapp.databinding.ItemProfileBinding
+import com.example.boardapp.ui.detail.DetailActivity
 import com.example.boardapp.ui.main.OnImageClickListener
 
-class ProfileAdapter(private val listener: OnImageClickListener) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
+class ProfileAdapter(private val listener: OnImageClickListener) :
+    RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
 
     private val datas = mutableListOf<ProfileData>()
 
@@ -37,6 +35,10 @@ class ProfileAdapter(private val listener: OnImageClickListener) : RecyclerView.
                 btnImage.setOnClickListener {
                     listener.onImageClick(bindingAdapterPosition)
                 }
+                itemprofile.setOnClickListener {
+                    listener.onImageViewClick(bindingAdapterPosition)
+                }
+
             }
         }
     }
@@ -55,7 +57,10 @@ class ProfileAdapter(private val listener: OnImageClickListener) : RecyclerView.
     private fun removeItem(position: Int) {
         datas.removeAt(position)
         notifyItemRemoved(position)
+
+
     }
+
     fun updateImage(position: Int, imageUri: Uri) {
         datas[position].imageUri = imageUri
         notifyItemChanged(position)
@@ -78,7 +83,5 @@ class ProfileAdapter(private val listener: OnImageClickListener) : RecyclerView.
                 .into(imageView)
         }
     }
-
-
-
 }
+

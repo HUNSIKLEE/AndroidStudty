@@ -5,7 +5,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,9 +13,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.boardapp.R
 import com.example.boardapp.databinding.ActivityMainBinding
-import com.example.boardapp.ui.login.LoginActivity
+import com.example.boardapp.ui.detail.DetailActivity
 import com.example.boardapp.ui.login.ProfileAdapter
 
 
@@ -24,21 +24,22 @@ class MainActivity : AppCompatActivity(), OnImageClickListener {
 
     private lateinit var binding: ActivityMainBinding
     private val profileAdapter = ProfileAdapter(this)
+
     companion object {
         const val REQ_GALLERY = 1
     }
+
     private var selectedPosition = 0
 
     private val imageResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            result.data?.data?.let {uri->
-                profileAdapter.updateImage(selectedPosition,uri)
+            result.data?.data?.let { uri ->
+                profileAdapter.updateImage(selectedPosition, uri)
             }
         }
     }
-
 
 
     @SuppressLint("SuspiciousIndentation")
@@ -62,7 +63,7 @@ class MainActivity : AppCompatActivity(), OnImageClickListener {
         btnAdd.setOnClickListener {
             addItem()
             textReset()
-
+            rvProfile.scrollToPosition(1);
         }
 
         editName.addTextChangedListener {
@@ -88,6 +89,7 @@ class MainActivity : AppCompatActivity(), OnImageClickListener {
     private fun checkEnableBtn() = with(binding) {
         btnAdd.isEnabled =
             editName.text.isNotEmpty() && editAge.text.isNotEmpty() && editEmail.text.isNotEmpty()
+
     }
 
     private fun back() = with(binding) {
@@ -121,7 +123,10 @@ class MainActivity : AppCompatActivity(), OnImageClickListener {
         }
     }
 
-
+    override fun onImageViewClick(position: Int) {
+        val intent = Intent(this, DetailActivity::class.java)
+        startActivity(intent)
+    }
 
     private fun addItem() = with(binding) {
         val shared = getSharedPreferences("login", MODE_PRIVATE)
@@ -141,6 +146,7 @@ class MainActivity : AppCompatActivity(), OnImageClickListener {
         profileAdapter.addItem(
             ProfileData(name = name, age = age, email = email, img = R.drawable.charles)
         )
-    }
 
+
+    }
 }
