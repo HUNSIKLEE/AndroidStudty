@@ -3,10 +3,13 @@ package com.example.boardapp.ui.main
 import ProfileData
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.View
+import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -16,9 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.boardapp.R
 import com.example.boardapp.databinding.ActivityMainBinding
-import com.example.boardapp.ui.detail.DetailActivity
 import com.example.boardapp.ui.login.ProfileAdapter
-
 
 class MainActivity : AppCompatActivity(), OnImageClickListener {
 
@@ -124,8 +125,42 @@ class MainActivity : AppCompatActivity(), OnImageClickListener {
     }
 
     override fun onImageViewClick(position: Int) {
-        val intent = Intent(this, DetailActivity::class.java)
-        startActivity(intent)
+        readData()
+        OnClick(position)
+    }
+
+    private fun readData()= with(binding){
+        val shared = getSharedPreferences("login", MODE_PRIVATE)
+
+
+
+
+    }
+
+    private fun OnClick(position: Int) {
+        val dialog = Dialog(this)
+
+        dialog.setContentView(R.layout.custom_dialog) // Set the custom dialog layout
+
+        val updateBtn = dialog.findViewById<Button>(R.id.btn_update)
+        val cancelBtn = dialog.findViewById<Button>(R.id.btn_cancle)
+        val deleteBtn = dialog.findViewById<Button>(R.id.btn_delete)
+        val imgView = dialog.findViewById<View>(R.id.dialog_image)
+
+        updateBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+        cancelBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+        deleteBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+        imgView.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun addItem() = with(binding) {
@@ -146,7 +181,5 @@ class MainActivity : AppCompatActivity(), OnImageClickListener {
         profileAdapter.addItem(
             ProfileData(name = name, age = age, email = email, img = R.drawable.charles)
         )
-
-
     }
 }
