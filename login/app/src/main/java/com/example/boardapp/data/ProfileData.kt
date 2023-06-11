@@ -4,6 +4,6 @@ data class ProfileData(
     val name: String,
     val age: String,
     val email: String,
-    val img: Int,
-    var imageUri: Uri? = null // Add this property to hold the image URI
+    var imageUri: String? = null,
+    val img: Int = 0
 )
