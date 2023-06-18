@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.KeyEvent
+import android.widget.Button
 import android.widget.Chronometer
 import android.widget.Toast
 import com.example.boardapp.databinding.ActivityLoginBinding
@@ -14,8 +15,8 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
 
-    private var initTime = 0L
-    private var pauseTimes = mutableMapOf<Chronometer, Long>()
+    private var initTime = 0L // 뒤로 가기 버튼을 누른 시각을 저장하는 속성
+    private var pauseTime = 0L // 멈춘 시각을 저장하는 속성
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,54 +40,51 @@ class LoginActivity : AppCompatActivity() {
                 startActivity(intent)
             }
 
-            val chronometerList = listOf(chronometer, chronometer2, chronometer3)
-            val startButton = btnStart
-            val stopButtons = listOf(btnStop, btnStop2, btnStop3)
-            val resetButtons = listOf(btnReset, btnReset2, btnReset3)
-
-            chronometerList.forEach { chronometer ->
-                pauseTimes[chronometer] = 0L
-            }
-
-            startButton.setOnClickListener {
-                startChronometers(chronometerList)
-                stopButtons.forEach { it.isEnabled = true }
-                resetButtons.forEach { it.isEnabled = true }
-            }
-
-            stopButtons.forEachIndexed { index, stopButton ->
-                stopButton.setOnClickListener {
-                    stopChronometer(chronometerList[index])
-                }
-            }
-
-            resetButtons.forEachIndexed { index, resetButton ->
-                resetButton.setOnClickListener {
-                    resetChronometer(chronometerList[index])
-                }
-            }
+            setupChronometer(chronometer, btnStart, btnStop, btnReset)
+            setupChronometer(chronometer2, btnStart2, btnStop2, btnReset2)
+            setupChronometer(chronometer3, btnStart3, btnStop3, btnReset3)
         }
     }
 
-    private fun startChronometers(chronometers: List<Chronometer>) {
-        val currentTime = SystemClock.elapsedRealtime()
-        val updatedBaseTime = currentTime + pauseTimes.values.firstOrNull()!! ?: 0L
+    private fun setupChronometer(
+        chronometer: Chronometer,
+        startButton: Button,
+        stopButton: Button,
+        resetButton: Button
+    ) {
+        startButton.setOnClickListener {
+            val currentTime = SystemClock.elapsedRealtime()
+            val updatedBaseTime = currentTime + pauseTime
 
-        chronometers.forEach { chronometer ->
             chronometer.base = updatedBaseTime
             chronometer.start()
+
+            // Button visibility adjustment
+            startButton.isEnabled = false
+            stopButton.isEnabled = true
+            resetButton.isEnabled = true
         }
-    }
 
-    private fun stopChronometer(chronometer: Chronometer) {
-        chronometer.stop()
-        pauseTimes[chronometer] = chronometer.base - SystemClock.elapsedRealtime()
-    }
+        stopButton.setOnClickListener {
+            pauseTime = chronometer.base - SystemClock.elapsedRealtime()
+            chronometer.stop()
 
-    private fun resetChronometer(chronometer: Chronometer) {
-        chronometer.base = SystemClock.elapsedRealtime()
-        chronometer.stop()
-        pauseTimes[chronometer] = 0L
+            // Button visibility adjustment
+            startButton.isEnabled = true
+            stopButton.isEnabled = false
+            resetButton.isEnabled = true
+        }
+
+        resetButton.setOnClickListener {
+            pauseTime = 0L
+            chronometer.base = SystemClock.elapsedRealtime()
+            chronometer.stop()
+
+            // Button visibility adjustment
+            startButton.isEnabled = true
+            stopButton.isEnabled = false
+            resetButton.isEnabled = false
+        }
     }
 
     // 뒤로 가기 버튼 이벤트 핸들러

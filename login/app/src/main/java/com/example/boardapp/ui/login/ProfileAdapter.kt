@@ -11,15 +11,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.boardapp.R
 import com.example.boardapp.databinding.ItemProfileBinding
-import com.example.boardapp.ui.main.OnImageClickListener
 
-
-class ProfileAdapter(private val listener: OnImageClickListener) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
+class ProfileAdapter(
+    private val onItemClick : (Int, ProfileData) -> Unit,
+    private val onImageClick : (Int) -> Unit
+) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
 
     private val datas = mutableListOf<ProfileData>()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemProfileBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding.root).apply {
+            this.itemView.setOnClickListener {
+                onItemClick(bindingAdapterPosition, datas[bindingAdapterPosition])
+            }
             with(binding) {
                 btnRemove.setOnClickListener {
                     val position = bindingAdapterPosition
@@ -27,11 +32,8 @@ class ProfileAdapter(private val listener: OnImageClickListener) : RecyclerView.
                         removeItem(position)
                     }
                 }
-                btnImage.setOnClickListener {
-                    listener.onImageClick(bindingAdapterPosition)
-                }
-                itemView.setOnClickListener {
-                    listener.onImageViewClick(bindingAdapterPosition)
+                imageView.setOnClickListener {
+                    onImageClick(bindingAdapterPosition)
                 }
             }
         }
@@ -48,20 +50,20 @@ class ProfileAdapter(private val listener: OnImageClickListener) : RecyclerView.
         notifyItemInserted(itemCount - 1)
     }
 
-    fun updateItem(position: Int, profileData: ProfileData) {
-        datas[position] = profileData
-        notifyItemChanged(position)
-    }
-
-    fun removeItem(position: Int) {
+    private fun removeItem(position: Int) {
         datas.removeAt(position)
         notifyItemRemoved(position)
     }
+
     fun updateImage(position: Int, imageUri: Uri) {
-        datas[position].imageUri = imageUri.toString()
+        datas[position].imageUri = imageUri
         notifyItemChanged(position)
     }
 
+    fun updateItem(position: Int, profileData: ProfileData){
+        datas[position] = profileData
+        notifyItemChanged(position)
+    }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val nameTextView: TextView = itemView.findViewById(R.id.name_textView)
@@ -77,8 +79,10 @@ class ProfileAdapter(private val listener: OnImageClickListener) : RecyclerView.
 
 
             Glide.with(imageView.context)
-                .load(data.imageUri)
+                .load(data.imageUri?:R.drawable.baseline_account_circle_24)
                 .into(imageView)
         }
     }
+
+
 }
