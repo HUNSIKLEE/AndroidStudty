@@ -3,10 +3,12 @@ package com.example.boardapp.ui.login
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.os.SystemClock
 import android.view.KeyEvent
 import android.widget.Button
 import android.widget.Chronometer
+import android.widget.TextView
 import android.widget.Toast
 import com.example.boardapp.databinding.ActivityLoginBinding
 import com.example.boardapp.ui.main.MainActivity
@@ -40,62 +42,59 @@ class LoginActivity : AppCompatActivity() {
                 startActivity(intent)
             }
 
-            setupChronometer(chronometer, btnStart, btnStop, btnReset)
-            setupChronometer(chronometer2, btnStart2, btnStop2, btnReset2)
-            setupChronometer(chronometer3, btnStart3, btnStop3, btnReset3)
+            setupTimer(tvTimer, btnStart )
+            setupTimer(tvTimer2, btnStart2)
+            setupTimer(tvTimer3, btnStart3)
         }
     }
-
-    private fun setupChronometer(
-        chronometer: Chronometer,
+    private fun setupTimer(
+        textView: TextView,
         startButton: Button,
-        stopButton: Button,
-        resetButton: Button
     ) {
-        startButton.setOnClickListener {
-            val currentTime = SystemClock.elapsedRealtime()
-            val updatedBaseTime = currentTime + pauseTime
+        var isRunning = false
+        var startTime = 0L
+        val handler = Handler()
+        lateinit var runnable: Runnable
 
-            chronometer.base = updatedBaseTime
-            chronometer.start()
-
-            // Button visibility adjustment
-            startButton.isEnabled = false
-            stopButton.isEnabled = true
-            resetButton.isEnabled = true
+        fun updateTextView() {
+            val elapsedTime = SystemClock.elapsedRealtime() - startTime
+            val seconds = (elapsedTime / 1000).toInt()
+            val minutes = seconds / 60
+            val remainingSeconds = seconds % 60
+            val timeFormatted = String.format("%02d:%02d", minutes, remainingSeconds)
+            textView.text = timeFormatted
         }
 
-        stopButton.setOnClickListener {
-            pauseTime = chronometer.base - SystemClock.elapsedRealtime()
-            chronometer.stop()
-
-            // Button visibility adjustment
-            startButton.isEnabled = true
-            stopButton.isEnabled = false
-            resetButton.isEnabled = true
-        }
-
-        resetButton.setOnClickListener {
-            pauseTime = 0L
-            chronometer.base = SystemClock.elapsedRealtime()
-            chronometer.stop()
-
-            // Button visibility adjustment
-            startButton.isEnabled = true
-            stopButton.isEnabled = false
-            resetButton.isEnabled = false
-        }
-    }
-
-    // 뒤로 가기 버튼 이벤트 핸들러
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (System.currentTimeMillis() - initTime > 3000) {
-                Toast.makeText(this, "종료하려면 한 번 더 누르세요!!", Toast.LENGTH_SHORT).show()
-                initTime = System.currentTimeMillis()
-                return true
+        fun toggleButtons() {
+            if (isRunning) {
+                startButton.text = "Stop"
+            } else {
+                startButton.text = "Start"
             }
         }
-        return super.onKeyDown(keyCode, event)
+
+        startButton.setOnClickListener {
+            if (!isRunning) {
+                startTime = SystemClock.elapsedRealtime()
+                updateTextView()
+                isRunning = true
+
+                runnable = object : Runnable {
+                    override fun run() {
+                        updateTextView()
+                        handler.postDelayed(this, 1000) // Update every 1 second
+                    }
+                }
+                handler.postDelayed(runnable, 1000)
+            } else {
+                isRunning = false
+                handler.removeCallbacks(runnable)
+            }
+            toggleButtons()
+        }
+
+
+        // Initial button state
+        toggleButtons()
     }
 }

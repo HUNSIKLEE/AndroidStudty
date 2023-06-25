@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    
+
     private val profileAdapter = ProfileAdapter(
         { position, profileData ->
             showDetail(position,profileData)
