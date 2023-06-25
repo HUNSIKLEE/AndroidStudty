@@ -12,6 +12,8 @@ import android.widget.TextView
 import android.widget.Toast
 import com.example.boardapp.databinding.ActivityLoginBinding
 import com.example.boardapp.ui.main.MainActivity
+import java.util.Timer
+import kotlin.concurrent.timerTask
 
 class LoginActivity : AppCompatActivity() {
 
@@ -47,17 +49,16 @@ class LoginActivity : AppCompatActivity() {
             setupTimer(tvTimer3, btnStart3)
         }
     }
+
     private fun setupTimer(
         textView: TextView,
         startButton: Button,
     ) {
         var isRunning = false
-        var startTime = 0L
-        val handler = Handler()
-        lateinit var runnable: Runnable
+        var elapsedTime = 0L
+        var timer: Timer? = null
 
         fun updateTextView() {
-            val elapsedTime = SystemClock.elapsedRealtime() - startTime
             val seconds = (elapsedTime / 1000).toInt()
             val minutes = seconds / 60
             val remainingSeconds = seconds % 60
@@ -75,26 +76,27 @@ class LoginActivity : AppCompatActivity() {
 
         startButton.setOnClickListener {
             if (!isRunning) {
-                startTime = SystemClock.elapsedRealtime()
+                elapsedTime = 0L
                 updateTextView()
                 isRunning = true
 
-                runnable = object : Runnable {
-                    override fun run() {
+                timer = Timer()
+                timer?.scheduleAtFixedRate(timerTask {
+                    elapsedTime += 1000
+                    runOnUiThread {
                         updateTextView()
-                        handler.postDelayed(this, 1000) // Update every 1 second
                     }
-                }
-                handler.postDelayed(runnable, 1000)
+                }, 1000, 1000)
             } else {
                 isRunning = false
-                handler.removeCallbacks(runnable)
+                timer?.cancel()
+                timer = null
             }
             toggleButtons()
         }
 
-
         // Initial button state
         toggleButtons()
     }
+
 }
