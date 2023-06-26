@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import com.example.boardapp.databinding.ActivityLoginBinding
+import com.example.boardapp.ui.main.ApiActivity
 import com.example.boardapp.ui.main.MainActivity
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
@@ -45,6 +46,11 @@ class LoginActivity : AppCompatActivity(), CoroutineScope {
             setupTimer(tvTimer, btnStart)
             setupTimer(tvTimer2, btnStart2)
             setupTimer(tvTimer3, btnStart3)
+
+            btnGpt.setOnClickListener {
+                val intent = Intent(this@LoginActivity, ApiActivity::class.java)
+                startActivity(intent)
+            }
         }
     }
 
