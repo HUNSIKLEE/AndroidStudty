@@ -3,77 +3,93 @@ package com.example.boardapp.ui.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.boardapp.data.ChatMessage
 import com.example.boardapp.databinding.ActivityApiBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.withContext
-
 
 class ApiActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityApiBinding
+    private val client = OkHttpClient()
+    private val messageList: MutableList<ChatMessage> = mutableListOf()
+    private lateinit var chatAdapter: ChatAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityApiBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnApi.setOnClickListener {
-            generateText()
+        chatAdapter = ChatAdapter(messageList)
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = chatAdapter
+
+        binding.btnSend.setOnClickListener {
+            val userInput = binding.etMsg.text.toString().trim()
+            if (userInput.isNotEmpty()) {
+                addToChat(userInput, isUser = true)
+                binding.etMsg.text.clear()
+                requestChatAPI(userInput)
+            }
         }
     }
 
-    private fun generateText() {
-        val prompt = "Please recommend only three restaurants near Seoul National University Station"
-        val model = "text-davinci-002"
-        val apiKey = "<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>"
+    private fun addToChat(message: String, isUser: Boolean) {
+        val chatMessage = ChatMessage(message, isUser)
+        messageList.add(chatMessage)
+        chatAdapter.notifyItemInserted(messageList.size - 1)
+        binding.recyclerView.scrollToPosition(messageList.size - 1)
+    }
 
-        val client = OkHttpClient()
-
-        val json = JSONObject()
-        json.put("prompt", prompt)
-        json.put("max_tokens", 100)
-        json.put("temperature", 0.5)
-        json.put("n", 1)
-        json.put("stop", ".")
-
-        val requestBody = json.toString().toRequestBody("application/json".toMediaType())
-
+    private fun requestChatAPI(userInput: String) {
+        val jsonObject = JSONObject()
+        try {
+            jsonObject.put("messages", createMessagePayload(userInput))
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+        val requestBody = RequestBody.create("application/json".toMediaTypeOrNull(), jsonObject.toString())
         val request = Request.Builder()
-            .url("https://api.openai.com/v1/engines/$model/completions")
-            .addHeader("Content-Type", "application/json")
-            .addHeader("Authorization", "Bearer $apiKey")
+            .url("https://api.openai.com/v1/chat/completions")
+            .addHeader("Authorization", "Bearer YOUR_API_KEY")
             .post(requestBody)
             .build()
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val response = client.newCall(request).execute()
-                val responseData = response.body?.string()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
 
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful && responseData != null) {
-                        val data = JSONObject(responseData)
-                        val generatedText = data.getJSONArray("choices")
-                            .getJSONObject(0)
-                            .getString("text")
-                        binding.generatedTextView.text = generatedText
-                    } else {
-                        binding.generatedTextView.text = "Error: ${response.message}"
-                    }
-                }
-            } catch (e: IOException) {
-                withContext(Dispatchers.Main) {
-                    binding.generatedTextView.text = "Error: ${e.message}"
+            @Throws(IOException::class)
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body?.string()
+                    processChatAPIResponse(responseBody)
+                } else {
+                    // Handle API error
                 }
             }
+        })
+    }
+
+    private fun createMessagePayload(userInput: String): List<JSONObject> {
+        val userMessage = JSONObject()
+        userMessage.put("role", "system")
+        userMessage.put("content", userInput)
+
+        return listOf(userMessage)
+    }
+
+    private fun processChatAPIResponse(responseBody: String?) {
+        val responseJson = JSONObject(responseBody)
+        val choicesArray = responseJson.getJSONArray("choices")
+        if (choicesArray.length() > 0) {
+            val generatedMessage = choicesArray.getJSONObject(0).getString("message")
+            addToChat(generatedMessage, isUser = false)
         }
     }
 }
