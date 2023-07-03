@@ -151,13 +151,13 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/btnGpt"
+        android:id="@+id/btnApi"
         android:layout_width="170dp"
         android:layout_height="45dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="13dp"
         android:layout_marginEnd="25dp"
-        android:text="chat GPT"
+        android:text="api"
         app:layout_constraintEnd_toStartOf="@+id/login_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pw_editTextTextPassword" />

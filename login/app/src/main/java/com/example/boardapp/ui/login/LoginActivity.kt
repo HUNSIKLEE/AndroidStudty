@@ -4,17 +4,24 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.boardapp.data.Coin
 import com.example.boardapp.databinding.ActivityLoginBinding
-import com.example.boardapp.ui.main.ApiActivity
+import com.example.boardapp.ui.main.ApiObject
 import com.example.boardapp.ui.main.MainActivity
 import kotlinx.coroutines.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import kotlin.coroutines.CoroutineContext
 
 class LoginActivity : AppCompatActivity(), CoroutineScope {
 
     private lateinit var binding: ActivityLoginBinding
-    private var initTime = 0L // 뒤로 가기 버튼을 누른 시각을 저장하는 속성
     private lateinit var job: Job
+    lateinit var listAdapter: ListAdapter
+    var coinList = listOf<Coin>()
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
@@ -25,7 +32,9 @@ class LoginActivity : AppCompatActivity(), CoroutineScope {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        job = Job() // Initialize the job
+        job = Job()
+        listAdapter = ListAdapter()
+
 
         with(binding) {
             loginButton.setOnClickListener {
@@ -47,7 +56,8 @@ class LoginActivity : AppCompatActivity(), CoroutineScope {
             setupTimer(tvTimer2, btnStart2)
             setupTimer(tvTimer3, btnStart3)
 
-            btnGpt.setOnClickListener {
+            btnApi.setOnClickListener {
+
                 val intent = Intent(this@LoginActivity, ApiActivity::class.java)
                 startActivity(intent)
             }
@@ -102,6 +112,5 @@ class LoginActivity : AppCompatActivity(), CoroutineScope {
 
         toggleButtons()
     }
-
 }
 

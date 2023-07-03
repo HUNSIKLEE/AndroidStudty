@@ -1,55 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.ApiActivity">
+    android:orientation="vertical"
+    tools:context=".ui.login.ApiActivity">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn01"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#9ACC84"
+        android:textSize="18sp"
+        android:text="List Load" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler01"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/recycler_view"
-        android:layout_above="@+id/bottom_layout"/>
+        android:layout_height="match_parent"/>
 
-    <TextView
-        android:id="@+id/tvMessageContent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#000000"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:padding="8dp"
-         />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_alignParentBottom="true"
-        android:padding="8dp"
-        android:id="@+id/bottom_layout">
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/et_msg"
-            android:layout_centerInParent="true"
-            android:hint="Write here"
-            android:padding="16dp"
-            android:layout_toLeftOf="@+id/btn_send"
-            />
-
-        <ImageButton
-            android:id="@+id/btn_send"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true"
-            android:layout_marginStart="10dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="8dp"
-            android:src="@drawable/baseline_send_24" />
-
-    </RelativeLayout>
-
-</RelativeLayout>
+</LinearLayout>
