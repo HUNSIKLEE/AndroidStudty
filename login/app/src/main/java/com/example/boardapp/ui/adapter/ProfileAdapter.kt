@@ -4,8 +4,6 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.boardapp.R
@@ -30,8 +28,10 @@ class ProfileAdapter(
                 btnRemove.setOnClickListener {
                     val position = bindingAdapterPosition
                     if (position != RecyclerView.NO_POSITION) {
-                        onRemoveClick(datas[position])
+                        val profileData = datas[position]
+                        onRemoveClick(profileData)
                     }
+
                 }
                 btnImage.setOnClickListener {
                     onImageClick(bindingAdapterPosition)
@@ -46,19 +46,24 @@ class ProfileAdapter(
         holder.bind(datas[position])
     }
 
-    fun addItem(profileData: ProfileData) {
-        datas.add(profileData)
-        notifyItemInserted(itemCount - 1)
-    }
-
     fun setItems(profileList: List<ProfileData>) {
         datas.clear()
         datas.addAll(profileList)
         notifyDataSetChanged()
     }
 
-    private fun removeItem(position: Int) {
-        if (position >= 0 && position < datas.size) {
+    fun addItem(profileData: ProfileData) {
+        datas.add(profileData)
+        notifyItemInserted(itemCount - 1)
+    }
+
+    fun updateItem(position: Int, profileData: ProfileData) {
+        datas[position] = profileData
+        notifyItemChanged(position)
+    }
+
+    fun removeItem(position: Int) {
+        if (position in 0 until datas.size) {
             datas.removeAt(position)
             notifyItemRemoved(position)
         }
@@ -69,25 +74,21 @@ class ProfileAdapter(
         notifyItemChanged(position)
     }
 
-    fun updateItem(position: Int, profileData: ProfileData){
-        datas[position] = profileData
-        notifyItemChanged(position)
-    }
-
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val nameTextView: TextView = itemView.findViewById(R.id.name_textView)
-        private val ageTextView: TextView = itemView.findViewById(R.id.age_textView)
-        private val emailTextView: TextView = itemView.findViewById(R.id.email_textView)
-        private val imageView: ImageView = itemView.findViewById(R.id.imageView)
+        private val binding = ItemProfileBinding.bind(itemView)
 
         fun bind(data: ProfileData) {
-            nameTextView.text = data.name
-            emailTextView.text = data.email
-            ageTextView.text = data.age
+            with(binding) {
+                nameTextView.text = data.name
+                emailTextView.text = data.email
+                ageTextView.text = data.age
 
-            Glide.with(imageView.context)
-                .load(data.imageUri ?: R.drawable.baseline_account_circle_24)
-                .into(imageView)
+                Glide.with(imageView.context)
+                    .load(Uri.parse(data.imageUri.toString()))
+                    .placeholder(R.drawable.baseline_account_circle_24)
+                    .error(R.drawable.baseline_account_circle_24)
+                    .into(imageView)
+            }
         }
     }
 }

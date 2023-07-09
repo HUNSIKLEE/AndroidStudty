@@ -30,45 +30,34 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var profileDatabase: ProfileDatabase
     private lateinit var profileDataDao: ProfileDataDao
-    private val profileList: MutableList<ProfileData> = mutableListOf()
+    private lateinit var profileAdapter: ProfileAdapter
+
     companion object {
         const val REQ_GALLERY = 1
     }
+
     private var selectedPosition = 0
 
     private val imageResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            result.data?.data?.let { uri->
-                if(profileDetailDialog?.isShowing == true) profileDetailDialog?.changeImage(uri)
-                else profileAdapter.updateImage(selectedPosition,uri)
+            result.data?.data?.let { uri ->
+                if (profileDetailDialog?.isShowing == true) {
+                    profileDetailDialog?.changeImage(uri)
+                } else {
+                    profileAdapter.updateImage(selectedPosition, uri)
+                }
             }
         }
     }
 
-    private val profileAdapter = ProfileAdapter(
-        { position, profileData ->
-            showDetail(position,profileData)
-        },
-        { position ->
-            selectedImage(position)
-        }
-    ) { profileData ->
-        removeItem(profileData as ProfileData)
-    }
+    private var profileDetailDialog: ProfileDetailDialog? = null
 
-    private var profileDetailDialog : ProfileDetailDialog? = null
-
-    @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        setUpAdapter()
-        setUpListener()
-        back()
 
         profileDatabase = Room.databaseBuilder(
             applicationContext,
@@ -76,6 +65,22 @@ class MainActivity : AppCompatActivity() {
             "profile_database"
         ).build()
         profileDataDao = profileDatabase.profileDataDao()
+
+        profileAdapter = ProfileAdapter(
+            { position, profileData ->
+                showDetail(position, profileData)
+            },
+            { position ->
+                selectedImage(position)
+            },
+            { profileData ->
+                removeItem(profileData)
+            }
+        )
+
+        setUpAdapter()
+        setUpListener()
+        back()
 
         GlobalScope.launch(Dispatchers.IO) {
             val profileList = profileDataDao.getAll()
@@ -85,85 +90,82 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun addItem() = with(binding){
+    private fun addItem() {
         val profileData = ProfileData(
-            name = editName.text.toString(),
-            age = editAge.text.toString(),
-            email = editEmail.text.toString(),
+            name = binding.editName.text.toString(),
+            age = binding.editAge.text.toString(),
+            email = binding.editEmail.text.toString(),
             imageUri = Uri.parse("")
         )
 
         GlobalScope.launch(Dispatchers.IO) {
             profileDataDao.insert(profileData)
             val updatedProfileList = profileDataDao.getAll()
-            runOnUiThread {
+            withContext(Dispatchers.Main) {
                 profileAdapter.setItems(updatedProfileList)
+                binding.rvProfile.smoothScrollToPosition(profileAdapter.itemCount - 1)
             }
         }
     }
-
 
     private fun removeItem(profileData: ProfileData) {
         GlobalScope.launch(Dispatchers.IO) {
             profileDataDao.delete(profileData)
             val updatedProfileList = profileDataDao.getAll()
-            runOnUiThread {
+            withContext(Dispatchers.Main) {
                 profileAdapter.setItems(updatedProfileList)
             }
         }
     }
 
-    private fun setUpAdapter() = with(binding.rvProfile){
-        layoutManager = LinearLayoutManager(this@MainActivity)
-        adapter = profileAdapter
+    private fun setUpAdapter() {
+        binding.rvProfile.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = profileAdapter
+        }
     }
 
-    private fun setUpListener() = with(binding){
-        btnAdd.setOnClickListener {
-            addItem()
-            textReset()
-            val targetPosition = profileAdapter.itemCount - 1
-            if (targetPosition >= 0 && targetPosition < profileAdapter.itemCount) {
-                rvProfile.smoothScrollToPosition(targetPosition)
+    private fun setUpListener() {
+        with(binding) {
+            btnAdd.setOnClickListener {
+                addItem()
+                textReset()
+            }
+
+            editName.addTextChangedListener {
+                checkEnableBtn()
+            }
+
+            editAge.addTextChangedListener {
+                checkEnableBtn()
+            }
+
+            editEmail.addTextChangedListener {
+                checkEnableBtn()
             }
         }
+    }
 
-      
-        editName.addTextChangedListener {
-            checkEnableBtn()
-        }
-
-        editAge.addTextChangedListener {
-            checkEnableBtn()
-        }
-
-        editEmail.addTextChangedListener {
-            checkEnableBtn()
+    private fun textReset() {
+        with(binding) {
+            editName.text.clear()
+            editAge.text.clear()
+            editEmail.text.clear()
         }
     }
 
-    private fun removeItem(position: Int) {
-        if (position >= 0 && position < profileList.size) {
-            profileList.removeAt(position)
-            profileAdapter.notifyItemRemoved(position)
+    private fun checkEnableBtn() {
+        with(binding) {
+            val nameNotEmpty = editName.text.isNotEmpty()
+            val ageNotEmpty = editAge.text.isNotEmpty()
+            val emailNotEmpty = editEmail.text.isNotEmpty()
+
+            btnAdd.isEnabled = nameNotEmpty && ageNotEmpty && emailNotEmpty
         }
     }
-    private fun textReset()= with(binding){
-        editName.text.clear()
-        editAge.text.clear()
-        editEmail.text.clear()
-    }
 
-    private fun checkEnableBtn() = with(binding) {
-        val nameNotEmpty = editName.text.isNotEmpty()
-        val ageNotEmpty = editAge.text.isNotEmpty()
-        val emailNotEmpty = editEmail.text.isNotEmpty()
-
-        btnAdd.isEnabled = nameNotEmpty && ageNotEmpty && emailNotEmpty
-    }
-
-    private fun back() = with(binding){
-        btnBack.setOnClickListener {
+    private fun back() {
+        binding.btnBack.setOnClickListener {
             finish()
         }
     }
@@ -193,11 +195,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showDetail(position: Int, profileData: ProfileData){
+    private fun showDetail(position: Int, profileData: ProfileData) {
         selectedPosition = position
 
-        profileDetailDialog = ProfileDetailDialog(this, profileData, imageResult){
-            profileAdapter.updateItem(selectedPosition,it)
+        profileDetailDialog = ProfileDetailDialog(this, profileData, imageResult) { updatedProfileData ->
+            profileAdapter.updateItem(selectedPosition, updatedProfileData)
         }
 
         profileDetailDialog?.show()
