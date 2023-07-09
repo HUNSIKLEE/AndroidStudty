@@ -1,8 +1,16 @@
-import android.net.Uri
+package com.example.boardapp.data
 
+import android.net.Uri
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "profile_data")
 data class ProfileData(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
     val name: String,
     val age: String,
     val email: String,
-    var imageUri: Comparable<Uri>? = null,
+    var imageUri: Uri,
+    val isDeleted: Boolean = false
 )

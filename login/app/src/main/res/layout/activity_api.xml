@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.login.ApiActivity">
+    tools:context=".api.ui.view.ApiActivity">
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn01"

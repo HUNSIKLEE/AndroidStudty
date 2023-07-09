@@ -1,12 +1,13 @@
-package com.example.boardapp.ui.login
+package com.example.boardapp.api.ui.view
 
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.boardapp.data.Coin
+import com.example.boardapp.api.data.Coin
 import com.example.boardapp.databinding.ActivityApiBinding
-import com.example.boardapp.ui.main.ApiObject
+import com.example.boardapp.ui.adapter.ListAdapter
+import com.example.boardapp.api.data.ApiObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -22,8 +23,7 @@ class ApiActivity  : AppCompatActivity() {
         listAdapter = ListAdapter()
 
         binding.btn01.setOnClickListener {
-            listAdapter.setList(coinList)
-            listAdapter.notifyDataSetChanged()
+            initList()
         }
 
         binding.recycler01.apply {
@@ -31,7 +31,6 @@ class ApiActivity  : AppCompatActivity() {
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
         }
-        initList()
     }
 
     private fun initList() {
@@ -42,6 +41,7 @@ class ApiActivity  : AppCompatActivity() {
                 if(response.isSuccessful) {
                     coinList = response.body() ?: listOf()
                     listAdapter.setList(coinList)
+                    listAdapter.notifyDataSetChanged()
                 }
             }
 

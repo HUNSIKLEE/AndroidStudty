@@ -1,10 +1,10 @@
-package com.example.boardapp.ui.login
+package com.example.boardapp.ui.adapter
 
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.boardapp.data.Coin
+import com.example.boardapp.api.data.Coin
 import com.example.boardapp.databinding.ItemListBinding
 
 class ListAdapter: RecyclerView.Adapter<ListAdapter.MyView>() {

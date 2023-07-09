@@ -1,6 +1,5 @@
 package com.example.boardapp.ui.main.dialog
 
-import ProfileData
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -18,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import com.bumptech.glide.Glide
 import com.example.boardapp.R
+import com.example.boardapp.data.ProfileData
 import com.example.boardapp.databinding.CustomDialogBinding
 import com.example.boardapp.ui.main.MainActivity
 
@@ -28,7 +28,6 @@ class ProfileDetailDialog(
     private val onEditClick : (ProfileData) -> Unit
 ) : Dialog(context, R.style.CustomDialog)  {
     private lateinit var binding: CustomDialogBinding
-
     private var selectedUri : Uri? = null
 
     @SuppressLint("SetTextI18n")
@@ -66,7 +65,8 @@ class ProfileDetailDialog(
             editImage()
         }
 
-        btnCancel.setOnClickListener { dismiss() }
+        btnCancel.setOnClickListener {
+            dismiss() }
 
         btnUpdate.setOnClickListener {
             onEditClick(
@@ -78,6 +78,9 @@ class ProfileDetailDialog(
                 )
             )
             dismiss()
+        }
+        btnDelete.setOnClickListener {
+
         }
     }
 

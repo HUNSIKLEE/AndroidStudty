@@ -1,4 +1,4 @@
-package com.example.boardapp.data
+package com.example.boardapp.api.data
 
 
 

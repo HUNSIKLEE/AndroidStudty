@@ -1,6 +1,5 @@
-package com.example.boardapp.ui.login
+package com.example.boardapp.ui.adapter
 
-import ProfileData
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -10,11 +9,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.boardapp.R
+import com.example.boardapp.data.ProfileData
 import com.example.boardapp.databinding.ItemProfileBinding
 
 class ProfileAdapter(
-    private val onItemClick : (Int, ProfileData) -> Unit,
-    private val onImageClick : (Int) -> Unit
+    private val onItemClick: (Int, ProfileData) -> Unit,
+    private val onImageClick: (Int) -> Unit,
+    private val onRemoveClick: (ProfileData) -> Unit
 ) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
 
     private val datas = mutableListOf<ProfileData>()
@@ -29,10 +30,10 @@ class ProfileAdapter(
                 btnRemove.setOnClickListener {
                     val position = bindingAdapterPosition
                     if (position != RecyclerView.NO_POSITION) {
-                        removeItem(position)
+                        onRemoveClick(datas[position])
                     }
                 }
-                imageView.setOnClickListener {
+                btnImage.setOnClickListener {
                     onImageClick(bindingAdapterPosition)
                 }
             }
@@ -50,9 +51,17 @@ class ProfileAdapter(
         notifyItemInserted(itemCount - 1)
     }
 
+    fun setItems(profileList: List<ProfileData>) {
+        datas.clear()
+        datas.addAll(profileList)
+        notifyDataSetChanged()
+    }
+
     private fun removeItem(position: Int) {
-        datas.removeAt(position)
-        notifyItemRemoved(position)
+        if (position >= 0 && position < datas.size) {
+            datas.removeAt(position)
+            notifyItemRemoved(position)
+        }
     }
 
     fun updateImage(position: Int, imageUri: Uri) {
@@ -72,17 +81,13 @@ class ProfileAdapter(
         private val imageView: ImageView = itemView.findViewById(R.id.imageView)
 
         fun bind(data: ProfileData) {
-
             nameTextView.text = data.name
             emailTextView.text = data.email
             ageTextView.text = data.age
 
-
             Glide.with(imageView.context)
-                .load(data.imageUri?:R.drawable.baseline_account_circle_24)
+                .load(data.imageUri ?: R.drawable.baseline_account_circle_24)
                 .into(imageView)
         }
     }
-
-
 }

@@ -1,7 +1,6 @@
-package com.example.boardapp.ui.main
+package com.example.boardapp.api.data
 
 
-import com.example.boardapp.data.UpbitAPI
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
