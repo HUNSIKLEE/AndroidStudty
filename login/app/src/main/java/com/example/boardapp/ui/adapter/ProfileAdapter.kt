@@ -16,7 +16,7 @@ class ProfileAdapter(
     private val onRemoveClick: (ProfileData) -> Unit
 ) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
 
-    private val datas = mutableListOf<ProfileData>()
+     val datas = mutableListOf<ProfileData>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemProfileBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -62,6 +62,13 @@ class ProfileAdapter(
         notifyItemChanged(position)
     }
 
+    fun deleteItem(profileData: ProfileData ){
+        val index = datas.indexOfFirst { it == profileData }
+        if(index != -1){
+            datas.removeAt(index)
+            notifyItemRemoved(index)
+        }
+    }
     fun removeItem(position: Int) {
         if (position in 0 until datas.size) {
             datas.removeAt(position)

@@ -7,11 +7,13 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import com.example.boardapp.data.ProfileData
@@ -46,7 +48,13 @@ class MainActivity : AppCompatActivity() {
                 if (profileDetailDialog?.isShowing == true) {
                     profileDetailDialog?.changeImage(uri)
                 } else {
-                    profileAdapter.updateImage(selectedPosition, uri)
+                    lifecycleScope.launch(Dispatchers.IO){
+                        val updateData = profileAdapter.datas[selectedPosition].copy(imageUri = uri)
+                        profileDataDao.update(updateData)
+                        withContext(Dispatchers.Main){
+                            profileAdapter.updateImage(selectedPosition, uri)
+                        }
+                    }
                 }
             }
         }
@@ -82,38 +90,38 @@ class MainActivity : AppCompatActivity() {
         setUpListener()
         back()
 
-        GlobalScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             val profileList = profileDataDao.getAll()
+
             withContext(Dispatchers.Main) {
                 profileAdapter.setItems(profileList)
             }
         }
     }
 
-    private fun addItem() {
+    private fun addItem() = with(binding) {
         val profileData = ProfileData(
-            name = binding.editName.text.toString(),
-            age = binding.editAge.text.toString(),
-            email = binding.editEmail.text.toString(),
+            name = editName.text.toString(),
+            age = editAge.text.toString(),
+            email = editEmail.text.toString(),
             imageUri = Uri.parse("")
         )
 
-        GlobalScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             profileDataDao.insert(profileData)
-            val updatedProfileList = profileDataDao.getAll()
             withContext(Dispatchers.Main) {
-                profileAdapter.setItems(updatedProfileList)
-                binding.rvProfile.smoothScrollToPosition(profileAdapter.itemCount - 1)
+                profileAdapter.addItem(profileData)
+                rvProfile.smoothScrollToPosition(profileAdapter.itemCount - 1)
             }
         }
     }
 
-    private fun removeItem(profileData: ProfileData) {
-        GlobalScope.launch(Dispatchers.IO) {
+    private fun removeItem(profileData: ProfileData) = with(binding) {
+        lifecycleScope.launch(Dispatchers.IO) {
             profileDataDao.delete(profileData)
-            val updatedProfileList = profileDataDao.getAll()
             withContext(Dispatchers.Main) {
-                profileAdapter.setItems(updatedProfileList)
+                profileAdapter.deleteItem(profileData)
+                rvProfile.smoothScrollToPosition(profileAdapter.itemCount)
             }
         }
     }
@@ -164,8 +172,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun back() {
-        binding.btnBack.setOnClickListener {
+    private fun back() = with(binding) {
+        btnBack.setOnClickListener {
             finish()
         }
     }
@@ -198,9 +206,15 @@ class MainActivity : AppCompatActivity() {
     private fun showDetail(position: Int, profileData: ProfileData) {
         selectedPosition = position
 
-        profileDetailDialog = ProfileDetailDialog(this, profileData, imageResult) { updatedProfileData ->
-            profileAdapter.updateItem(selectedPosition, updatedProfileData)
-        }
+        profileDetailDialog =
+            ProfileDetailDialog(this, profileData, imageResult) { updatedProfileData ->
+                lifecycleScope.launch(Dispatchers.IO) {
+                    profileDataDao.update(updatedProfileData)
+                    withContext(Dispatchers.Main) {
+                        profileAdapter.updateItem(selectedPosition, updatedProfileData)
+                    }
+                }
+            }
 
         profileDetailDialog?.show()
     }

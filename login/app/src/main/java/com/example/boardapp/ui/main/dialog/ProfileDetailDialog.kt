@@ -45,9 +45,7 @@ class ProfileDetailDialog(
         editAge.setText(profileData.age)
         editEmail.setText(profileData.email)
 
-        Glide.with(dialogImage.context)
-            .load(profileData.imageUri?:R.drawable.baseline_account_circle_24)
-            .into(dialogImage)
+        dialogImage.setImageURI(profileData.imageUri)
     }
 
     private fun setUpListener() = with(binding){
