@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import com.example.boardapp.data.ProfileDatabase
-import com.example.boardapp.data.model.ProfileData
 import com.example.boardapp.databinding.ActivityMainBinding
 import com.example.boardapp.ui.adapter.ProfileAdapter
 import com.example.boardapp.ui.main.dialog.ProfileDetailDialog
@@ -64,37 +63,45 @@ class MainActivity : AppCompatActivity() {
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         mainViewModel.initialize(profileDatabase.profileDataDao(), imageResult)
 
-        binding.rvProfile.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = profileAdapter
+        with(binding) {
+
+            rvProfile.apply {
+                layoutManager = LinearLayoutManager(this@MainActivity)
+                adapter = profileAdapter
+            }
+
+            btnAdd.setOnClickListener {
+                val name = editName.text.toString()
+                val age = editAge.text.toString()
+                val email = editEmail.text.toString()
+
+                mainViewModel.addProfile(name, age, email)
+                resetInputFields()
+            }
+
+            btnBack.setOnClickListener {
+                finish()
+            }
+
+            editName.addTextChangedListener {
+                checkEnableButton()
+            }
+
+           editAge.addTextChangedListener {
+                checkEnableButton()
+            }
+
+            editEmail.addTextChangedListener {
+                checkEnableButton()
+            }
+
+
+            mainViewModel.profileList.observe(this@MainActivity) { profileList ->
+                profileAdapter.setItems(profileList)
+            }
+
+            mainViewModel.loadProfileList()
         }
-
-        binding.btnAdd.setOnClickListener {
-            val name = binding.editName.text.toString()
-            val age = binding.editAge.text.toString()
-            val email = binding.editEmail.text.toString()
-
-            mainViewModel.addProfile(name, age, email)
-            resetInputFields()
-        }
-
-        binding.editName.addTextChangedListener {
-            checkEnableButton()
-        }
-
-        binding.editAge.addTextChangedListener {
-            checkEnableButton()
-        }
-
-        binding.editEmail.addTextChangedListener {
-            checkEnableButton()
-        }
-
-        mainViewModel.profileList.observe(this) { profileList ->
-            profileAdapter.setItems(profileList)
-        }
-
-        mainViewModel.loadProfileList()
     }
 
     private fun resetInputFields() {
