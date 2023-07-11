@@ -1,66 +1,41 @@
+// MainActivity.kt
+
 package com.example.boardapp.ui.main
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
-import com.example.boardapp.data.ProfileData
-import com.example.boardapp.data.ProfileDataDao
 import com.example.boardapp.data.ProfileDatabase
+import com.example.boardapp.data.model.ProfileData
 import com.example.boardapp.databinding.ActivityMainBinding
 import com.example.boardapp.ui.adapter.ProfileAdapter
 import com.example.boardapp.ui.main.dialog.ProfileDetailDialog
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.example.boardapp.ui.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var profileDatabase: ProfileDatabase
-    private lateinit var profileDataDao: ProfileDataDao
     private lateinit var profileAdapter: ProfileAdapter
-
-    companion object {
-        const val REQ_GALLERY = 1
-    }
-
-    private var selectedPosition = 0
-
+    private lateinit var mainViewModel: MainViewModel
     private val imageResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
             result.data?.data?.let { uri ->
-                if (profileDetailDialog?.isShowing == true) {
-                    profileDetailDialog?.changeImage(uri)
-                } else {
-                    lifecycleScope.launch(Dispatchers.IO){
-                        val updateData = profileAdapter.datas[selectedPosition].copy(imageUri = uri)
-                        profileDataDao.update(updateData)
-                        withContext(Dispatchers.Main){
-                            profileAdapter.updateImage(selectedPosition, uri)
-                        }
-                    }
-                }
+                profileAdapter.updateImage(selectedPosition, uri)
+                mainViewModel.updateProfileImage(selectedPosition, uri)
             }
         }
     }
-
-    private var profileDetailDialog: ProfileDetailDialog? = null
+    private var selectedPosition = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,89 +47,57 @@ class MainActivity : AppCompatActivity() {
             ProfileDatabase::class.java,
             "profile_database"
         ).build()
-        profileDataDao = profileDatabase.profileDataDao()
 
         profileAdapter = ProfileAdapter(
-            { position, profileData ->
-                showDetail(position, profileData)
+            onItemEditClick = { position ->
+                showProfileDetailDialog(position)
             },
-            { position ->
-                selectedImage(position)
+            onItemImageClick = { position ->
+                selectedPosition = position
+                selectImage()
             },
-            { profileData ->
-                removeItem(profileData)
+            onItemRemoveClick = { profileData ->
+                mainViewModel.removeProfile(profileData)
             }
         )
 
-        setUpAdapter()
-        setUpListener()
-        back()
+        mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        mainViewModel.initialize(profileDatabase.profileDataDao(), imageResult)
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            val profileList = profileDataDao.getAll()
-
-            withContext(Dispatchers.Main) {
-                profileAdapter.setItems(profileList)
-            }
-        }
-    }
-
-    private fun addItem() = with(binding) {
-        val profileData = ProfileData(
-            name = editName.text.toString(),
-            age = editAge.text.toString(),
-            email = editEmail.text.toString(),
-            imageUri = Uri.parse("")
-        )
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            profileDataDao.insert(profileData)
-            withContext(Dispatchers.Main) {
-                profileAdapter.addItem(profileData)
-                rvProfile.smoothScrollToPosition(profileAdapter.itemCount - 1)
-            }
-        }
-    }
-
-    private fun removeItem(profileData: ProfileData) = with(binding) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            profileDataDao.delete(profileData)
-            withContext(Dispatchers.Main) {
-                profileAdapter.deleteItem(profileData)
-                rvProfile.smoothScrollToPosition(profileAdapter.itemCount)
-            }
-        }
-    }
-
-    private fun setUpAdapter() {
         binding.rvProfile.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = profileAdapter
         }
-    }
 
-    private fun setUpListener() {
-        with(binding) {
-            btnAdd.setOnClickListener {
-                addItem()
-                textReset()
-            }
+        binding.btnAdd.setOnClickListener {
+            val name = binding.editName.text.toString()
+            val age = binding.editAge.text.toString()
+            val email = binding.editEmail.text.toString()
 
-            editName.addTextChangedListener {
-                checkEnableBtn()
-            }
-
-            editAge.addTextChangedListener {
-                checkEnableBtn()
-            }
-
-            editEmail.addTextChangedListener {
-                checkEnableBtn()
-            }
+            mainViewModel.addProfile(name, age, email)
+            resetInputFields()
         }
+
+        binding.editName.addTextChangedListener {
+            checkEnableButton()
+        }
+
+        binding.editAge.addTextChangedListener {
+            checkEnableButton()
+        }
+
+        binding.editEmail.addTextChangedListener {
+            checkEnableButton()
+        }
+
+        mainViewModel.profileList.observe(this) { profileList ->
+            profileAdapter.setItems(profileList)
+        }
+
+        mainViewModel.loadProfileList()
     }
 
-    private fun textReset() {
+    private fun resetInputFields() {
         with(binding) {
             editName.text.clear()
             editAge.text.clear()
@@ -162,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkEnableBtn() {
+    private fun checkEnableButton() {
         with(binding) {
             val nameNotEmpty = editName.text.isNotEmpty()
             val ageNotEmpty = editAge.text.isNotEmpty()
@@ -172,50 +115,42 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun back() = with(binding) {
-        btnBack.setOnClickListener {
-            finish()
+    private fun selectImage() {
+        val permissions = arrayOf(
+            android.Manifest.permission.READ_EXTERNAL_STORAGE,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+
+        val permissionGranted = permissions.all {
+            checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
         }
-    }
 
-    private fun selectedImage(position: Int) {
-        selectedPosition = position
-        val writePermission = ContextCompat.checkSelfPermission(
-            this, Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-        val readPermission = ContextCompat.checkSelfPermission(
-            this, Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-
-        if (writePermission == PackageManager.PERMISSION_DENIED || readPermission == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ), REQ_GALLERY
-            )
+        if (permissionGranted) {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            imageResult.launch(intent)
         } else {
-            Intent(Intent.ACTION_PICK).apply {
-                setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
-                imageResult.launch(this)
-            }
+            requestPermissions(permissions, REQ_GALLERY)
         }
     }
 
-    private fun showDetail(position: Int, profileData: ProfileData) {
-        selectedPosition = position
-
-        profileDetailDialog =
-            ProfileDetailDialog(this, profileData, imageResult) { updatedProfileData ->
-                lifecycleScope.launch(Dispatchers.IO) {
-                    profileDataDao.update(updatedProfileData)
-                    withContext(Dispatchers.Main) {
-                        profileAdapter.updateItem(selectedPosition, updatedProfileData)
-                    }
-                }
+    private fun showProfileDetailDialog(position: Int) {
+        val profileData = profileAdapter.getItem(position)
+        val profileDetailDialog = ProfileDetailDialog(
+            this,
+            profileData,
+            imageResult,
+            onEditClick = { updatedProfileData ->
+                mainViewModel.updateProfileData(updatedProfileData)
+            },
+            onDeleteClick = { updatedProfileData ->
+                mainViewModel.removeProfile(updatedProfileData)
             }
+        )
+        profileDetailDialog.show()
+    }
 
-        profileDetailDialog?.show()
+    companion object {
+        private const val REQ_GALLERY = 1
     }
 }

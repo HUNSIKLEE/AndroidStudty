@@ -1,6 +1,7 @@
-package com.example.boardapp.data
+package com.example.boardapp.data.dao
 
 import androidx.room.*
+import com.example.boardapp.data.model.ProfileData
 
 @Dao
 interface ProfileDataDao {

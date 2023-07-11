@@ -1,4 +1,4 @@
-package com.example.boardapp.data
+package com.example.boardapp.data.model
 
 import android.net.Uri
 import androidx.room.Entity
