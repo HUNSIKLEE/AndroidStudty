@@ -7,16 +7,15 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_input"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-300dp"
-        android:background="#FFFFFF"
+        android:background="@drawable/shape_20"
+        android:layout_marginHorizontal="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.638">
+        >
 
         <ImageView
             android:id="@+id/dialog_image"
@@ -63,7 +62,6 @@
             android:id="@+id/btnUpdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
             android:text="등록"
             android:textColor="#000000"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -74,21 +72,17 @@
             android:id="@+id/btnCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
             android:text="취소"
             android:textColor="#000000"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnDelete"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/btnDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="70dp"
             android:layout_marginTop="21dp"
-            android:layout_marginEnd="60dp"
             android:text="삭제"
             android:textColor="#000000"
             app:layout_constraintEnd_toStartOf="@+id/btnUpdate"
