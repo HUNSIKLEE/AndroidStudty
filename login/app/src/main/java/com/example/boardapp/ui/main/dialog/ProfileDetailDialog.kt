@@ -19,13 +19,14 @@ import com.example.boardapp.databinding.CustomDialogBinding
 class ProfileDetailDialog(
     context: Context,
     private val profileData: ProfileData,
-    private val imageResult: ActivityResultLauncher<Intent>,
+    private val onSelectImage: () -> Unit,
     private val onEditClick: (ProfileData) -> Unit,
     private val onDeleteClick: (ProfileData) -> Unit
 ) : Dialog(context, R.style.CustomDialog) {
 
     private lateinit var binding: CustomDialogBinding
     private var selectedUri: Uri? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,15 +37,14 @@ class ProfileDetailDialog(
         setUpListeners()
     }
 
-    private fun initView() {
-        with(binding) {
-            editName.setText(profileData.name)
-            editAge.setText(profileData.age)
-            editEmail.setText(profileData.email)
 
-            dialogImage.setImageURI(profileData.imageUri)
-        }
+    private fun initView() = with(binding) {
+        editName.setText(profileData.name)
+        editAge.setText(profileData.age)
+        editEmail.setText(profileData.email)
+        dialogImage.setImageURI(profileData.imageUri)
     }
+
 
     private fun setUpListeners() {
         with(binding) {
@@ -61,7 +61,7 @@ class ProfileDetailDialog(
             }
 
             dialogImage.setOnClickListener {
-                editImage()
+                onSelectImage()
             }
 
             btnCancel.setOnClickListener {
@@ -93,11 +93,11 @@ class ProfileDetailDialog(
         }
     }
 
-    private fun editImage() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        imageResult.launch(intent)
+    fun setImage(uri : Uri){
+        selectedUri = uri
+        binding.dialogImage.setImageURI(uri)
     }
+
 
     override fun show() {
         if (context.isFinishing()) return

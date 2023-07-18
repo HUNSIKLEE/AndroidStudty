@@ -1,4 +1,4 @@
-package com.example.boardapp.ui.main
+package com.example.boardapp.utils
 
 import android.net.Uri
 import androidx.room.TypeConverter

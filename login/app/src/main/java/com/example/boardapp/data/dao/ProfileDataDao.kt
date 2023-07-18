@@ -2,11 +2,12 @@ package com.example.boardapp.data.dao
 
 import androidx.room.*
 import com.example.boardapp.data.model.ProfileData
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProfileDataDao {
     @Query("SELECT * FROM profile_data")
-    suspend fun getAll(): List<ProfileData>
+    fun getAll(): Flow<List<ProfileData>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(profileData: ProfileData)

@@ -2,6 +2,7 @@
 
 package com.example.boardapp.ui.adapter
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -12,7 +13,7 @@ import com.example.boardapp.data.model.ProfileData
 import com.example.boardapp.databinding.ItemProfileBinding
 
 class ProfileAdapter(
-    private val onItemEditClick: (Int) -> Unit,
+    private val onItemEditClick: (ProfileData) -> Unit,
     private val onItemImageClick: (Int) -> Unit,
     private val onItemRemoveClick: (ProfileData) -> Unit
 ) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
@@ -30,6 +31,7 @@ class ProfileAdapter(
 
     override fun getItemCount(): Int = profileList.size
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: List<ProfileData>) {
         profileList.clear()
         profileList.addAll(items)
@@ -49,41 +51,24 @@ class ProfileAdapter(
     inner class ViewHolder(private val binding: ItemProfileBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        init {
-            binding.imageView.setOnClickListener {
-                val position = bindingAdapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    onItemEditClick(position)
-                }
-            }
+        fun bind(profileData: ProfileData) {
+            with(binding){
+                item = profileData
 
-            binding.btnImage.setOnClickListener {
-                val position = bindingAdapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    onItemImageClick(position)
+                itemProfile.setOnClickListener {
+                    onItemEditClick(profileData)
                 }
-            }
 
-            binding.btnRemove.setOnClickListener {
-                val position = bindingAdapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    val profileData = profileList[position]
+                btnImage.setOnClickListener {
+                    val position = bindingAdapterPosition
+                    if (position != RecyclerView.NO_POSITION) {
+                        onItemImageClick(position)
+                    }
+                }
+
+                btnRemove.setOnClickListener {
                     onItemRemoveClick(profileData)
                 }
-            }
-        }
-
-        fun bind(profileData: ProfileData) {
-            with(binding) {
-                nameTextView.text = profileData.name
-                emailTextView.text = profileData.email
-                ageTextView.text = profileData.age
-
-                Glide.with(imageView.context)
-                    .load(profileData.imageUri)
-                    .placeholder(R.drawable.baseline_account_circle_24)
-                    .error(R.drawable.baseline_account_circle_24)
-                    .into(imageView)
             }
         }
     }
