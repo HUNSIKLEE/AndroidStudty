@@ -11,6 +11,5 @@ data class ProfileData(
     val name: String,
     val age: String,
     val email: String,
-    var imageUri: Uri,
-    val isDeleted: Boolean = false
+    val imageUri: Uri
 )
