@@ -39,6 +39,8 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
+
+
             result.data?.data?.let { uri ->
                 imageResponse(uri)
             }
@@ -134,6 +136,7 @@ class MainActivity : AppCompatActivity() {
             requestPermissions(permissions, REQ_GALLERY)
         }
     }
+    
 
     private fun imageResponse(uri : Uri){
         if(profileDetailDialog?.isShowing == true) profileDetailDialog?.setImage(uri)
