@@ -19,6 +19,8 @@ class MainViewModel : ViewModel() {
     private val _profileList = MutableLiveData<List<ProfileData>>()
     val profileList : LiveData<List<ProfileData>> get() = _profileList
 
+
+    
     init {
         loadProfileList()
     }
