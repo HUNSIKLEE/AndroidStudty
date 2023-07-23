@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity() {
             requestPermissions(permissions, REQ_GALLERY)
         }
     }
-    
+
 
     private fun imageResponse(uri : Uri){
         if(profileDetailDialog?.isShowing == true) profileDetailDialog?.setImage(uri)
@@ -162,6 +162,8 @@ class MainActivity : AppCompatActivity() {
         )
         profileDetailDialog?.show()
     }
+
+
 
     companion object {
         private const val REQ_GALLERY = 1
