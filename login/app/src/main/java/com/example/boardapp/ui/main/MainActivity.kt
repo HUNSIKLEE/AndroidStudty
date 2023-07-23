@@ -28,6 +28,8 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
+
+
             result.data?.data?.let { uri ->
                 profileAdapter.updateImage(selectedPosition, uri)
                 mainViewModel.updateProfileImage(selectedPosition, uri)
@@ -140,6 +142,7 @@ class MainActivity : AppCompatActivity() {
             requestPermissions(permissions, REQ_GALLERY)
         }
     }
+    
 
     private fun showProfileDetailDialog(position: Int) {
         val profileData = profileAdapter.getItem(position)
