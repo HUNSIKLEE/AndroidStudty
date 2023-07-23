@@ -20,7 +20,7 @@ class MainViewModel : ViewModel() {
     val profileList : LiveData<List<ProfileData>> get() = _profileList
 
 
-    
+
     init {
         loadProfileList()
     }
