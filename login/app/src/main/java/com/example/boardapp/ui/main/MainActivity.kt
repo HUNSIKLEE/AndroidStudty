@@ -13,6 +13,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.boardapp.data.model.ProfileData
 import com.example.boardapp.databinding.ActivityMainBinding
+import com.example.boardapp.detail.DetailActivity
 import com.example.boardapp.ui.adapter.ProfileAdapter
 import com.example.boardapp.ui.main.dialog.ProfileDetailDialog
 
@@ -69,30 +70,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initListener() = with(binding) {
-        btnAdd.setOnClickListener {
-            val name = editName.text.toString()
-            val age = editAge.text.toString()
-            val email = editEmail.text.toString()
-
-            mainViewModel.addProfile(name, age, email)
-            resetInputFields()
-        }
-
-        btnBack.setOnClickListener {
-            finish()
-        }
-
-        editName.addTextChangedListener {
-            checkEnableButton()
-        }
-
-        editAge.addTextChangedListener {
-            checkEnableButton()
-        }
-
-        editEmail.addTextChangedListener {
-            checkEnableButton()
+    private fun initListener() {
+        binding.btnAdd.setOnClickListener {
+            val intent = Intent(this, DetailActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -100,21 +81,6 @@ class MainActivity : AppCompatActivity() {
         profileList.observe(this@MainActivity) { profileList ->
             profileAdapter.setItems(profileList)
         }
-    }
-
-    private fun resetInputFields() = with(binding) {
-        editName.text.clear()
-        editAge.text.clear()
-        editEmail.text.clear()
-    }
-
-
-    private fun checkEnableButton() = with(binding) {
-        val nameNotEmpty = editName.text.isNotEmpty()
-        val ageNotEmpty = editAge.text.isNotEmpty()
-        val emailNotEmpty = editEmail.text.isNotEmpty()
-
-        btnAdd.isEnabled = nameNotEmpty && ageNotEmpty && emailNotEmpty
     }
 
 
