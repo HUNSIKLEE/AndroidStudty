@@ -68,7 +68,7 @@ class ProfileDetailDialog(
                 dismiss()
             }
 
-            btnUpdate.setOnClickListener {
+            btnAdd.setOnClickListener {
                 val updatedProfileData = profileData.copy(
                     name = editName.text.toString(),
                     age = editAge.text.toString(),
@@ -88,7 +88,7 @@ class ProfileDetailDialog(
 
     private fun checkEnableButton() {
         with(binding) {
-            btnUpdate.isEnabled =
+            btnAdd.isEnabled =
                 editName.text.isNotEmpty() && editAge.text.isNotEmpty() && editEmail.text.isNotEmpty()
         }
     }

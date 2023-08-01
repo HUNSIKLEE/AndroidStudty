@@ -59,7 +59,7 @@
             app:layout_constraintTop_toBottomOf="@+id/edit_name" />
 
         <Button
-            android:id="@+id/btnUpdate"
+            android:id="@+id/btnAdd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="등록"
@@ -85,7 +85,7 @@
             android:layout_marginTop="21dp"
             android:text="삭제"
             android:textColor="#000000"
-            app:layout_constraintEnd_toStartOf="@+id/btnUpdate"
+            app:layout_constraintEnd_toStartOf="@+id/btnAdd"
             app:layout_constraintStart_toEndOf="@+id/btnCancel"
             app:layout_constraintTop_toBottomOf="@+id/dialog_image" />
 
