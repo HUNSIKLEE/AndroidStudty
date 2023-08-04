@@ -8,9 +8,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
+import com.bumptech.glide.Glide
 import com.example.boardapp.databinding.ActivityDetailBinding
-import com.example.boardapp.databinding.ActivityMainBinding
-import com.example.boardapp.ui.main.MainActivity
 import com.example.boardapp.ui.main.MainViewModel
 
 class DetailActivity : AppCompatActivity() {
@@ -18,6 +17,7 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
 
     private val detailViewModel by viewModels<MainViewModel>()
+    private var selectedPosition = -1
 
     private val imageResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -26,7 +26,8 @@ class DetailActivity : AppCompatActivity() {
 
 
             result.data?.data?.let { uri ->
-//                imageResponse(uri)
+                imageResponse(uri)
+                loadImage(uri)
             }
         }
     }
@@ -48,8 +49,18 @@ class DetailActivity : AppCompatActivity() {
             val age = editAge.text.toString()
             val email = editEmail.text.toString()
 
+            val name2= name.isNotEmpty()
+            val age2= age.isNotEmpty()
+            val email2= email.isNotEmpty()
+
+            btnAdd.isEnabled = name2 && age2 && email2
+
             detailViewModel.addProfile(name, age, email)
             resetInputFields()
+            finish()
+        }
+        imageView.setOnClickListener {
+            selectImage()
         }
 
         btnCancel.setOnClickListener {
@@ -84,7 +95,15 @@ class DetailActivity : AppCompatActivity() {
         btnAdd.isEnabled = nameNotEmpty && ageNotEmpty && emailNotEmpty
     }
 
+    private fun imageResponse(uri: Uri) {
+        detailViewModel.updateProfileImage(selectedPosition, uri)
+    }
 
+    private fun loadImage(imageUri: Uri) {
+        Glide.with(this)
+            .load(imageUri)
+            .into(binding.imageView)
+    }
     private fun selectImage() {
         val permissions = arrayOf(
             android.Manifest.permission.READ_EXTERNAL_STORAGE,
