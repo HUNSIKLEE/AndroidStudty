@@ -38,7 +38,6 @@ class DetailActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initListener()
-        selectImage()
 
     }
 
