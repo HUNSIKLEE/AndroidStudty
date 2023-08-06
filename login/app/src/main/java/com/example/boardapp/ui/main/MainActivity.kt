@@ -7,48 +7,33 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.boardapp.data.model.ProfileData
+import androidx.room.Room
+import com.example.boardapp.data.ProfileDatabase
 import com.example.boardapp.databinding.ActivityMainBinding
-import com.example.boardapp.detail.DetailActivity
 import com.example.boardapp.ui.adapter.ProfileAdapter
 import com.example.boardapp.ui.main.dialog.ProfileDetailDialog
+import com.example.boardapp.ui.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
-    private val mainViewModel by viewModels<MainViewModel>()
-
-    private val profileAdapter = ProfileAdapter(
-        onItemEditClick = { profileData ->
-            showProfileDetailDialog(profileData)
-        },
-        onItemImageClick = { position ->
-            selectedPosition = position
-            selectImage()
-        },
-        onItemRemoveClick = { profileData ->
-            mainViewModel.removeProfile(profileData)
-        }
-    )
-
+    private lateinit var profileDatabase: ProfileDatabase
+    private lateinit var profileAdapter: ProfileAdapter
+    private lateinit var mainViewModel: MainViewModel
     private val imageResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-
-
             result.data?.data?.let { uri ->
-                imageResponse(uri)
+                profileAdapter.updateImage(selectedPosition, uri)
+                mainViewModel.updateProfileImage(selectedPosition, uri)
             }
         }
     }
-
-    private var profileDetailDialog : ProfileDetailDialog? = null
-
     private var selectedPosition = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,32 +41,86 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        profileDatabase = Room.databaseBuilder(
+            applicationContext,
+            ProfileDatabase::class.java,
+            "profile_database"
+        ).build()
 
-        initAdapter()
-        initListener()
-        setUpObserve()
-    }
+        profileAdapter = ProfileAdapter(
+            onItemEditClick = { position ->
+                showProfileDetailDialog(position)
+            },
+            onItemImageClick = { position ->
+                selectedPosition = position
+                selectImage()
+            },
+            onItemRemoveClick = { profileData ->
+                mainViewModel.removeProfile(profileData)
+            }
+        )
 
-    private fun initAdapter() = with(binding) {
-        rvProfile.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = profileAdapter
+        mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        mainViewModel.initialize(profileDatabase.profileDataDao(), imageResult)
+
+        with(binding) {
+
+            rvProfile.apply {
+                layoutManager = LinearLayoutManager(this@MainActivity)
+                adapter = profileAdapter
+            }
+
+            btnAdd.setOnClickListener {
+                val name = editName.text.toString()
+                val age = editAge.text.toString()
+                val email = editEmail.text.toString()
+
+                mainViewModel.addProfile(name, age, email)
+                resetInputFields()
+            }
+
+            btnBack.setOnClickListener {
+                finish()
+            }
+
+            editName.addTextChangedListener {
+                checkEnableButton()
+            }
+
+           editAge.addTextChangedListener {
+                checkEnableButton()
+            }
+
+            editEmail.addTextChangedListener {
+                checkEnableButton()
+            }
+
+
+            mainViewModel.profileList.observe(this@MainActivity) { profileList ->
+                profileAdapter.setItems(profileList)
+            }
+
+            mainViewModel.loadProfileList()
         }
     }
 
-    private fun initListener() {
-        binding.btnAdd.setOnClickListener {
-            val intent = Intent(this, DetailActivity::class.java)
-            startActivity(intent)
+    private fun resetInputFields() {
+        with(binding) {
+            editName.text.clear()
+            editAge.text.clear()
+            editEmail.text.clear()
         }
     }
 
-    private fun setUpObserve() = with(mainViewModel) {
-        profileList.observe(this@MainActivity) { profileList ->
-            profileAdapter.setItems(profileList)
+    private fun checkEnableButton() {
+        with(binding) {
+            val nameNotEmpty = editName.text.isNotEmpty()
+            val ageNotEmpty = editAge.text.isNotEmpty()
+            val emailNotEmpty = editEmail.text.isNotEmpty()
+
+            btnAdd.isEnabled = nameNotEmpty && ageNotEmpty && emailNotEmpty
         }
     }
-
 
     private fun selectImage() {
         val permissions = arrayOf(
@@ -102,22 +141,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun imageResponse(uri : Uri){
-        if(profileDetailDialog?.isShowing == true) profileDetailDialog?.setImage(uri)
-        else{
-            profileAdapter.updateImage(selectedPosition, uri)
-            mainViewModel.updateProfileImage(selectedPosition, uri)
-        }
-    }
-
-    private fun showProfileDetailDialog(profileData: ProfileData) {
-        profileDetailDialog = ProfileDetailDialog(
+    private fun showProfileDetailDialog(position: Int) {
+        val profileData = profileAdapter.getItem(position)
+        val profileDetailDialog = ProfileDetailDialog(
             this,
             profileData,
-            onSelectImage = {
-                selectImage()
-            },
+            imageResult,
             onEditClick = { updatedProfileData ->
                 mainViewModel.updateProfileData(updatedProfileData)
             },
@@ -125,10 +154,8 @@ class MainActivity : AppCompatActivity() {
                 mainViewModel.removeProfile(updatedProfileData)
             }
         )
-        profileDetailDialog?.show()
+        profileDetailDialog.show()
     }
-
-
 
     companion object {
         private const val REQ_GALLERY = 1
