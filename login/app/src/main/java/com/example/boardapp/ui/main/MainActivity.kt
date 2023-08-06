@@ -9,7 +9,6 @@ import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.boardapp.data.model.ProfileData
 import com.example.boardapp.databinding.ActivityMainBinding
