@@ -1,8 +1,9 @@
-// MainViewModel.kt
+package com.example.boardapp.ui.detail.ui.view
 
-package com.example.boardapp.ui.main
-
+import android.graphics.Rect
 import android.net.Uri
+import android.view.View
+import android.view.ViewTreeObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,23 +13,23 @@ import com.example.boardapp.data.model.ProfileData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class AddProfileViewModel: ViewModel() {
 
     private val profileDatabase = ProfileDatabase.instance
 
     private val _profileList = MutableLiveData<List<ProfileData>>()
-    val profileList : LiveData<List<ProfileData>> get() = _profileList
-
+    private val profileList: LiveData<List<ProfileData>> get() = _profileList
 
 
     init {
         loadProfileList()
     }
+
     private fun loadProfileList() {
         viewModelScope.launch(Dispatchers.IO) {
-            profileDatabase.profileDataDao().getAll().collect{
+            profileDatabase.profileDataDao().getAll().collect {
                 launch(Dispatchers.Main) {
-                    this@MainViewModel._profileList.value = it
+                    this@AddProfileViewModel._profileList.value = it
                 }
             }
         }
@@ -39,7 +40,7 @@ class MainViewModel : ViewModel() {
             name = name,
             age = age,
             email = email,
-            imageUri = imageUri?:Uri.parse("")
+            imageUri = imageUri ?: Uri.parse("")
         )
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -65,9 +66,14 @@ class MainViewModel : ViewModel() {
                 profileList.value?.let {
                     profileDatabase.profileDataDao().update(it[position].copy(imageUri = imageUri))
                 }
-            }catch (e : IndexOutOfBoundsException){
+            } catch (e: IndexOutOfBoundsException) {
 
             }
         }
     }
+
+
+
+
+
 }

@@ -1,21 +1,14 @@
-// MainActivity.kt
-
 package com.example.boardapp.ui.main
 
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.boardapp.data.model.ProfileData
 import com.example.boardapp.databinding.ActivityMainBinding
-import com.example.boardapp.detail.DetailActivity
 import com.example.boardapp.ui.adapter.ProfileAdapter
-import com.example.boardapp.ui.main.dialog.ProfileDetailDialog
+import com.example.boardapp.ui.detail.ui.view.AddProfileActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,30 +18,15 @@ class MainActivity : AppCompatActivity() {
 
     private val profileAdapter = ProfileAdapter(
         onItemEditClick = { profileData ->
-            showProfileDetailDialog(profileData)
+            setItem(profileData)
         },
         onItemImageClick = { position ->
             selectedPosition = position
-            selectImage()
         },
         onItemRemoveClick = { profileData ->
             mainViewModel.removeProfile(profileData)
         }
     )
-
-    private val imageResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-
-
-            result.data?.data?.let { uri ->
-                imageResponse(uri)
-            }
-        }
-    }
-
-    private var profileDetailDialog : ProfileDetailDialog? = null
 
     private var selectedPosition = -1
 
@@ -56,7 +34,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
         initAdapter()
         initListener()
@@ -70,66 +47,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setItem(profileData: ProfileData) {
+        val intent = Intent(this, AddProfileActivity::class.java)
+        intent.putExtra("name", profileData.name)
+        intent.putExtra("age", profileData.age)
+        intent.putExtra("email", profileData.email)
+        intent.putExtra("imageUri", profileData.imageUri.toString())
+        startActivity(intent)
+    }
+
     private fun initListener() {
         binding.btnAdd.setOnClickListener {
-            val intent = Intent(this, DetailActivity::class.java)
+            val intent = Intent(this, AddProfileActivity::class.java)
             startActivity(intent)
         }
     }
-
     private fun setUpObserve() = with(mainViewModel) {
         profileList.observe(this@MainActivity) { profileList ->
             profileAdapter.setItems(profileList)
         }
     }
-
-
-    private fun selectImage() {
-        val permissions = arrayOf(
-            android.Manifest.permission.READ_EXTERNAL_STORAGE,
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-
-        val permissionGranted = permissions.all {
-            checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
-        }
-
-        if (permissionGranted) {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            imageResult.launch(intent)
-        } else {
-            requestPermissions(permissions, REQ_GALLERY)
-        }
-    }
-
-
-    private fun imageResponse(uri : Uri){
-        if(profileDetailDialog?.isShowing == true) profileDetailDialog?.setImage(uri)
-        else{
-            profileAdapter.updateImage(selectedPosition, uri)
-            mainViewModel.updateProfileImage(selectedPosition, uri)
-        }
-    }
-
-    private fun showProfileDetailDialog(profileData: ProfileData) {
-        profileDetailDialog = ProfileDetailDialog(
-            this,
-            profileData,
-            onSelectImage = {
-                selectImage()
-            },
-            onEditClick = { updatedProfileData ->
-                mainViewModel.updateProfileData(updatedProfileData)
-            },
-            onDeleteClick = { updatedProfileData ->
-                mainViewModel.removeProfile(updatedProfileData)
-            }
-        )
-        profileDetailDialog?.show()
-    }
-
-
 
     companion object {
         private const val REQ_GALLERY = 1

@@ -59,13 +59,6 @@ class ProfileAdapter(
                     onItemEditClick(profileData)
                 }
 
-                btnImage.setOnClickListener {
-                    val position = bindingAdapterPosition
-                    if (position != RecyclerView.NO_POSITION) {
-                        onItemImageClick(position)
-                    }
-                }
-
                 btnRemove.setOnClickListener {
                     onItemRemoveClick(profileData)
                 }

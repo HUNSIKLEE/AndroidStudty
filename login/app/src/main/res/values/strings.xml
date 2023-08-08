@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BoardApp</string>
+    <string name="edit_button">수정</string>
 </resources>

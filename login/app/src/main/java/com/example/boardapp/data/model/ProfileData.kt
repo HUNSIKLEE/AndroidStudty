@@ -3,6 +3,7 @@ package com.example.boardapp.data.model
 import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity(tableName = "profile_data")
 data class ProfileData(
@@ -12,4 +13,4 @@ data class ProfileData(
     val age: String,
     val email: String,
     val imageUri: Uri
-)
+): Serializable
