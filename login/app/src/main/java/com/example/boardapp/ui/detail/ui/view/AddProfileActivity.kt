@@ -60,34 +60,34 @@ class AddProfileActivity : AppCompatActivity() {
 
 
     private fun initView() = with(binding) {
-        val profileData: ProfileData? = intent.getParcelableExtra("profileData")
-        if (profileData != null) {
-            editName.setText(profileData.name)
-            editAge.setText(profileData.age)
-            editEmail.setText(profileData.email)
-            imageView.setImageURI(profileData.imageUri)
+        if (intent.hasExtra("name") && intent.hasExtra("age") && intent.hasExtra("email")) {
+            isEditMode = true
+            val name = intent.getStringExtra("name") ?: ""
+            val age = intent.getStringExtra("age") ?: ""
+            val email = intent.getStringExtra("email") ?: ""
+            val imageUri = intent.getStringExtra("imageUri") ?: ""
 
-            // Change the text of the button to "Edit"
-            btnAdd.text = getString(R.string.edit_button)
+            editName.setText(name)
+            editAge.setText(age)
+            editEmail.setText(email)
 
-            // Set a click listener on the "Edit" button to update the data
-            btnAdd.setOnClickListener {
-                val name = editName.text.toString()
-                val age = editAge.text.toString()
-                val email = editEmail.text.toString()
-
-                // Update the existing profile data using addProfileViewModel
-                profileData.id?.let { id ->
-                    addProfileViewModel.updateProfile(id, name, age, email, profileData.imageUri)
-                }
-
-                finish()
+            if (imageUri.isNotEmpty()) {
+                val uri = Uri.parse(imageUri)
+                loadImage(uri)
             }
+            val updatedProfileData = ProfileData(
+                name = name,
+                age = age,
+                email = email,
+                imageUri = Uri.parse(imageUri)
+            )
+
+            btnAdd.text = getString(R.string.edit_button)
+            addProfileViewModel.updateProfileData(updatedProfileData)
         } else {
             initListener()
         }
     }
-
     private fun initListener() = with(binding) {
         btnAdd.setOnClickListener {
             val name = editName.text.toString()

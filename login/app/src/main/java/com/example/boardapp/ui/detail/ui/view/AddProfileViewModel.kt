@@ -2,6 +2,7 @@ package com.example.boardapp.ui.detail.ui.view
 
 import android.graphics.Rect
 import android.net.Uri
+import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.lifecycle.LiveData
