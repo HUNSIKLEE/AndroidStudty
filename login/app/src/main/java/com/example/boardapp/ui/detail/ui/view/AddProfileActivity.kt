@@ -75,19 +75,30 @@ class AddProfileActivity : AppCompatActivity() {
                 val uri = Uri.parse(imageUri)
                 loadImage(uri)
             }
-            val updatedProfileData = ProfileData(
-                name = name,
-                age = age,
-                email = email,
-                imageUri = Uri.parse(imageUri)
-            )
 
             btnAdd.text = getString(R.string.edit_button)
-            addProfileViewModel.updateProfileData(updatedProfileData)
+            btnAdd.setOnClickListener {
+                val updatedName = editName.text.toString()
+                val updatedAge = editAge.text.toString()
+                val updatedEmail = editEmail.text.toString()
+
+                val updatedProfileData = ProfileData(
+                    name = updatedName,
+                    age = updatedAge,
+                    email = updatedEmail,
+                    imageUri = Uri.parse(imageUri)
+                )
+
+                // Update the existing profile data using addProfileViewModel
+                addProfileViewModel.updateProfileData(updatedProfileData)
+
+                finish()
+            }
         } else {
             initListener()
         }
     }
+
     private fun initListener() = with(binding) {
         btnAdd.setOnClickListener {
             val name = editName.text.toString()
